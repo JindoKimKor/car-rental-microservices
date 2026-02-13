@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Customers.API.Models;
+namespace Customer.WebAPI.Models;
 
 public partial class Customer
 {

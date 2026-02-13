@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Customers.API.Models;
+using Customer.WebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Customers.API.Data;
+namespace Customer.WebAPI.Data;
 
 public partial class AppDbContext : DbContext
 {
@@ -16,14 +16,14 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Customer> Customers { get; set; }
+    public virtual DbSet<Models.Customer> Customers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Server=localhost;Database=CustomerDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Customer>(entity =>
+        modelBuilder.Entity<Models.Customer>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Customer__3214EC075A39FF18");
 

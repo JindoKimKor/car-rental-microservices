@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Customers.API.Data;
-using Customers.API.Models;
+using Customer.WebAPI.Data;
 
-namespace Customers.API.Controllers
+namespace Customer.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -23,14 +22,14 @@ namespace Customers.API.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<Models.Customer>>> GetCustomers()
         {
             return await _context.Customers.ToListAsync();
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<ActionResult<Models.Customer>> GetCustomer(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
 
@@ -45,7 +44,7 @@ namespace Customers.API.Controllers
         // PUT: api/Customers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        public async Task<IActionResult> PutCustomer(int id, Models.Customer customer)
         {
             if (id != customer.Id)
             {
@@ -76,7 +75,7 @@ namespace Customers.API.Controllers
         // POST: api/Customers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<Models.Customer>> PostCustomer(Models.Customer customer)
         {
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
