@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="Customer.WebAPI/Customer.WebAPI.csproj" Id="fc024a65-6538-4807-8957-cfe1f64fcc1a" />
+  <Folder Name="/API/">
+    <Project Path="Customer.WebAPI/Customer.WebAPI.csproj" Id="fc024a65-6538-4807-8957-cfe1f64fcc1a" />
+  </Folder>
+  <Folder Name="/UI/">
+    <Project Path="CarRental.MVC/CarRental.MVC.csproj" Id="4351d495-89b7-4c8b-8168-2b5b5b4e385f" />
+  </Folder>
 </Solution>
