@@ -4,10 +4,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Register HttpClient for Customer WebAPI
-builder.Services.AddHttpClient("CustomerAPI", client =>
+builder.Services.AddHttpClient("CustomerAPI", (sp, client) =>
 {
-	client.BaseAddress = new Uri(builder.Configuration["ApiSettings:CustomerApiBaseUrl"]!);
+	var config = sp.GetRequiredService<IConfiguration>();
+	client.BaseAddress = new Uri(config["ApiSettings:CustomerApiBaseUrl"]!);
 });
+
+// Register HttpClient for Maintenance API
+builder.Services.AddHttpClient("MaintenanceApi", (sp, client) =>
+{
+	var config = sp.GetRequiredService<IConfiguration>();
+	client.BaseAddress = new Uri(config["ApiSettings:MaintenanceBaseUrl"]!);
+});
+
 
 var app = builder.Build();
 
