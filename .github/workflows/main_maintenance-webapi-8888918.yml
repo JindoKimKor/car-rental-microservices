@@ -23,17 +23,20 @@ jobs:
         with:
           dotnet-version: '10.x'
 
+      # Build the Maintenance WebAPI project in Release configuration
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build Maintenance.WebAPI/Maintenance.WebAPI.csproj --configuration Release
 
+      # Publish the project and output to a staging directory for deployment
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish Maintenance.WebAPI/Maintenance.WebAPI.csproj -c Release -o ${{env.DOTNET_ROOT}}/maintenance-api
 
+      # Upload the published output as an artifact to be used in the deploy job
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{env.DOTNET_ROOT}}/maintenance-api
 
   deploy:
     runs-on: ubuntu-latest
