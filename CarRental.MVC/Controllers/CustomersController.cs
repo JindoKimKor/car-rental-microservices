@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Customer.WebAPI.Models;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using CarRental.MVC.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CarRental.MVC.Controllers
 {
@@ -21,7 +21,7 @@ namespace CarRental.MVC.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var response = await _client.GetAsync("Customers");
-			var customers = await response.Content.ReadFromJsonAsync<List<Customer.WebAPI.Models.Customer>>(_jsonOptions);
+			var customers = await response.Content.ReadFromJsonAsync<List<CustomerViewModel>>(_jsonOptions);
 			return View(customers);
 		}
 
@@ -32,7 +32,7 @@ namespace CarRental.MVC.Controllers
 			var response = await _client.GetAsync($"Customers/{id}");
 			if (!response.IsSuccessStatusCode) return NotFound();
 
-			var customer = await response.Content.ReadFromJsonAsync<Customer.WebAPI.Models.Customer>(_jsonOptions);
+			var customer = await response.Content.ReadFromJsonAsync<CustomerViewModel>(_jsonOptions);
 			return View(customer);
 		}
 
@@ -43,7 +43,7 @@ namespace CarRental.MVC.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create(Customer.WebAPI.Models.Customer customer)
+		public async Task<IActionResult> Create(CustomerViewModel customer)
 		{
 			if (ModelState.IsValid)
 			{
@@ -61,13 +61,13 @@ namespace CarRental.MVC.Controllers
 			var response = await _client.GetAsync($"Customers/{id}");
 			if (!response.IsSuccessStatusCode) return NotFound();
 
-			var customer = await response.Content.ReadFromJsonAsync<Customer.WebAPI.Models.Customer>(_jsonOptions);
+			var customer = await response.Content.ReadFromJsonAsync<CustomerViewModel>(_jsonOptions);
 			return View(customer);
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, Customer.WebAPI.Models.Customer customer)
+		public async Task<IActionResult> Edit(int id, CustomerViewModel customer)
 		{
 			if (id != customer.Id) return NotFound();
 
@@ -87,7 +87,7 @@ namespace CarRental.MVC.Controllers
 			var response = await _client.GetAsync($"Customers/{id}");
 			if (!response.IsSuccessStatusCode) return NotFound();
 
-			var customer = await response.Content.ReadFromJsonAsync<Customer.WebAPI.Models.Customer>(_jsonOptions);
+			var customer = await response.Content.ReadFromJsonAsync<CustomerViewModel>(_jsonOptions);
 			return View(customer);
 		}
 
