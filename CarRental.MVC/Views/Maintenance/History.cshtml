@@ -36,7 +36,7 @@ else
                 <tr>
                     <td>@repair.RepairDate.ToShortDateString()</td>
                     <td>@repair.Description</td>
-                    <td>@repair.Cost.ToString("C")</td>
+                    <td>@($"${repair.Cost:F2}")</td>
                     <td>@repair.PerformedBy</td>
                 </tr>
             }
