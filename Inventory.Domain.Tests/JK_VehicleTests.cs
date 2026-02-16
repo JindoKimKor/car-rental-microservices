@@ -11,8 +11,8 @@ namespace JK_Inventory.Domain.Tests
 		{
 			return new Vehicle(
 				new VehicleCode("Toyota", "Camry"),
-				locationId: 1,
-				vehicleTypeId: 1
+				new LocationId(1),
+				new VehicleTypeId(1)
 			);
 		}
 

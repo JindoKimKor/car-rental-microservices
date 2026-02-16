@@ -27,6 +27,7 @@ namespace JK_Inventory.WebAPI.Controllers
 		public async Task<IActionResult> GetById(int id)
 		{
 			var vehicle = await _service.GetVehicleById(id);
+			if (vehicle == null) return NotFound();
 			return Ok(vehicle);
 		}
 

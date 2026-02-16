@@ -1,12 +1,8 @@
-﻿using Inventory.Domain.Entities;
+using Inventory.Domain.Entities;
 
 namespace JK_Inventory.Application.Interfaces
 {
-	public interface IVehicleRepository
+	public interface IVehicleRepository : IRepository<Vehicle>
 	{
-		Task<Vehicle?> FindByIdAsync(int id);
-		Task<IEnumerable<Vehicle>> FindAllAsync();
-		Task SaveAsync(Vehicle vehicle);
-		Task RemoveAsync(int id);
 	}
 }

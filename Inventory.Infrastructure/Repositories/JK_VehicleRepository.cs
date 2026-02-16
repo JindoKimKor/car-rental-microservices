@@ -53,9 +53,9 @@ namespace JK_Inventory.Infrastructure.Repositories
 					{
 						Make = vehicle.VehicleCode.Make,
 						Model = vehicle.VehicleCode.Model,
-						VehicleTypeId = vehicle.VehicleTypeId
+						VehicleTypeId = vehicle.VehicleTypeId.Value
 					},
-					VehicleLocationId = vehicle.LocationId,
+					VehicleLocationId = vehicle.LocationId.Value,
 					VehicleStatusId = (int)vehicle.Status,
 					LastUpdated = DateTime.UtcNow
 				};
@@ -99,8 +99,8 @@ namespace JK_Inventory.Infrastructure.Repositories
 			return new Vehicle(
 				inventory.Id,
 				new VehicleCode(inventory.Vehicle.Make, inventory.Vehicle.Model),
-				inventory.VehicleLocationId,
-				inventory.Vehicle.VehicleTypeId,
+				new LocationId(inventory.VehicleLocationId),
+				new VehicleTypeId(inventory.Vehicle.VehicleTypeId),
 				(VehicleStatus)inventory.VehicleStatusId
 			);
 		}

@@ -11,21 +11,21 @@ namespace Inventory.Domain.Entities
 	public class Vehicle : Entity, IAggregateRoot
 	{
 		public VehicleCode VehicleCode { get; private set; }
-		public int LocationId { get; private set; }
-		public int VehicleTypeId { get; private set; }
+		public LocationId LocationId { get; private set; }
+		public VehicleTypeId VehicleTypeId { get; private set; }
 		public VehicleStatus Status { get; private set; }
 
 		// For creating a new vehicle (defaults to Available)
-		public Vehicle(VehicleCode vehicleCode, int locationId, int vehicleTypeId)
+		public Vehicle(VehicleCode vehicleCode, LocationId locationId, VehicleTypeId vehicleTypeId)
 		{
-			VehicleCode = vehicleCode;
-			LocationId = locationId;
-			VehicleTypeId = vehicleTypeId;
+			VehicleCode = vehicleCode ?? throw new ArgumentNullException(nameof(vehicleCode));
+			LocationId = locationId ?? throw new ArgumentNullException(nameof(locationId));
+			VehicleTypeId = vehicleTypeId ?? throw new ArgumentNullException(nameof(vehicleTypeId));
 			Status = VehicleStatus.Available;
 		}
 
 		// For restoring an existing vehicle from the database
-		public Vehicle(int id, VehicleCode vehicleCode, int locationId, int vehicleTypeId, VehicleStatus status)
+		public Vehicle(int id, VehicleCode vehicleCode, LocationId locationId, VehicleTypeId vehicleTypeId, VehicleStatus status)
 		{
 			Id = id;
 			VehicleCode = vehicleCode;

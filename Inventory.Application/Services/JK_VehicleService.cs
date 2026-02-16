@@ -33,7 +33,9 @@ namespace Inventory.Application.Services
 		public async Task CreateVehicle(JK_CreateVehicleDto dto)
 		{
 			var vehicleCode = new VehicleCode(dto.Make, dto.Model);
-			var vehicle = new Vehicle(vehicleCode, dto.LocationId, dto.VehicleTypeId);
+			var locationId = new LocationId(dto.LocationId);
+			var vehicleTypeId = new VehicleTypeId(dto.VehicleTypeId);
+			var vehicle = new Vehicle(vehicleCode, locationId, vehicleTypeId);
 			await _repository.SaveAsync(vehicle);
 		}
 
@@ -76,8 +78,8 @@ namespace Inventory.Application.Services
 				Id = vehicle.Id,
 				Make = vehicle.VehicleCode.Make,
 				Model = vehicle.VehicleCode.Model,
-				LocationId = vehicle.LocationId,
-				VehicleTypeId = vehicle.VehicleTypeId,
+				LocationId = vehicle.LocationId.Value,
+				VehicleTypeId = vehicle.VehicleTypeId.Value,
 				Status = vehicle.Status.ToString()
 			};
 		}
