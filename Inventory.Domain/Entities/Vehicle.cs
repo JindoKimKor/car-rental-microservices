@@ -15,12 +15,23 @@ namespace Inventory.Domain.Entities
 		public int VehicleTypeId { get; private set; }
 		public VehicleStatus Status { get; private set; }
 
+		// For creating a new vehicle (defaults to Available)
 		public Vehicle(VehicleCode vehicleCode, int locationId, int vehicleTypeId)
 		{
 			VehicleCode = vehicleCode;
 			LocationId = locationId;
 			VehicleTypeId = vehicleTypeId;
 			Status = VehicleStatus.Available;
+		}
+
+		// For restoring an existing vehicle from the database
+		public Vehicle(int id, VehicleCode vehicleCode, int locationId, int vehicleTypeId, VehicleStatus status)
+		{
+			Id = id;
+			VehicleCode = vehicleCode;
+			LocationId = locationId;
+			VehicleTypeId = vehicleTypeId;
+			Status = status;
 		}
 
 		public void MarkAvailable()
