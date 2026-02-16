@@ -3,6 +3,15 @@
     <Project Path="Customer.WebAPI/Customer.WebAPI.csproj" Id="fc024a65-6538-4807-8957-cfe1f64fcc1a" />
     <Project Path="Maintenance.WebAPI/Maintenance.WebAPI.csproj" Id="16a11ddc-cdf8-4733-8404-d84bbd4a80e0" />
   </Folder>
+  <Folder Name="/API/Inventory/">
+    <Project Path="Inventory.Application/JK_Inventory.Application.csproj" Id="90d5a464-ecfd-49ce-a1d2-ddcb01b3ef35" />
+    <Project Path="Inventory.Domain/Inventory.Domain.csproj" Id="74993917-a608-4867-a772-bd8cbd48eec9" />
+    <Project Path="Inventory.Infrastructure/JK_Inventory.Infrastructure.csproj" Id="a2a2d9f1-df8d-4e50-a44c-f3176bcdbf5b" />
+    <Project Path="JK_Inventory.WebAPI/JK_Inventory.WebAPI.csproj" Id="2304c000-daca-40fd-8ea0-ed05d79fe59e" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Inventory.Domain.Tests/JK_Inventory.Domain.Tests.csproj" Id="4a029f54-ff77-48b6-a1ba-30e9382902c2" />
+  </Folder>
   <Folder Name="/UI/">
     <Project Path="CarRental.MVC/CarRental.MVC.csproj" Id="4351d495-89b7-4c8b-8168-2b5b5b4e385f" />
   </Folder>
