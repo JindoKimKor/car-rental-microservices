@@ -10,7 +10,7 @@ namespace JK_Inventory.Domain.Tests
 		private Vehicle CreateDefaultVehicle()
 		{
 			return new Vehicle(
-				new VehicleCode("Toyota-Camry"),
+				new VehicleCode("Toyota", "Camry"),
 				locationId: 1,
 				vehicleTypeId: 1
 			);

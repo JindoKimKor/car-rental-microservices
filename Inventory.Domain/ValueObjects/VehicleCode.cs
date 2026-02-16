@@ -1,27 +1,29 @@
-﻿namespace Inventory.Domain.ValueObjects
+﻿using Inventory.Domain.Common;
+
+namespace Inventory.Domain.ValueObjects
 {
-	public class VehicleCode
+	public class VehicleCode : ValueObject
 	{
-		public string Value { get; }
+		public string Make { get; private set; }
+		public string Model { get; private set; }
 
-		public VehicleCode(string value)
+		public VehicleCode(string make, string model)
 		{
-			if (string.IsNullOrWhiteSpace(value))
-				throw new ArgumentException("Vehicle code cannot be empty.");
+			if (string.IsNullOrWhiteSpace(make))
+				throw new ArgumentException("Make cannot be empty.");
+			if (string.IsNullOrWhiteSpace(model))
+				throw new ArgumentException("Model cannot be empty.");
 
-			Value = value;
+			Make = make;
+			Model = model;
 		}
 
-		public override bool Equals(object? obj)
+		protected override IEnumerable<object> GetEqualityComponents()
 		{
-			if (obj is not VehicleCode other)
-				return false;
-
-			return Value == other.Value;
+			yield return Make;
+			yield return Model;
 		}
 
-		public override int GetHashCode() => Value.GetHashCode();
-
-		public override string ToString() => Value;
+		public override string ToString() => $"{Make}-{Model}";
 	}
 }
