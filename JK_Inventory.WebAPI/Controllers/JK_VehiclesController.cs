@@ -33,8 +33,8 @@ namespace JK_Inventory.WebAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] JK_CreateVehicleDto dto)
 		{
-			var vehicle = await _service.CreateVehicle(dto);
-			return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, vehicle);
+			await _service.CreateVehicle(dto);
+			return Ok();
 		}
 
 		[HttpPut("{id}/status")]
