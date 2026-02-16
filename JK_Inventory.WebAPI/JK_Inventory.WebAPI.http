@@ -1,0 +1,6 @@
+@JK_Inventory.WebAPI_HostAddress = http://localhost:5189
+
+GET {{JK_Inventory.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
