@@ -4,6 +4,7 @@
     <Project Path="Maintenance.WebAPI/Maintenance.WebAPI.csproj" Id="16a11ddc-cdf8-4733-8404-d84bbd4a80e0" />
   </Folder>
   <Folder Name="/API/Inventory/">
+    <Project Path="Inventory.Application/Inventory.Application.csproj" Id="90d5a464-ecfd-49ce-a1d2-ddcb01b3ef35" />
     <Project Path="Inventory.Domain/Inventory.Domain.csproj" Id="74993917-a608-4867-a772-bd8cbd48eec9" />
   </Folder>
   <Folder Name="/Tests/">
