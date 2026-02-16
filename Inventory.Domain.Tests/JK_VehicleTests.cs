@@ -10,9 +10,9 @@ namespace JK_Inventory.Domain.Tests
 		private Vehicle CreateDefaultVehicle()
 		{
 			return new Vehicle(
-				new VehicleCode("VEH-001"),
+				new VehicleCode("Toyota-Camry"),
 				locationId: 1,
-				VehicleType.Sedan
+				vehicleTypeId: 1
 			);
 		}
 
@@ -112,7 +112,7 @@ namespace JK_Inventory.Domain.Tests
 
 			vehicle.MarkServiced();
 
-			Assert.Equal(VehicleStatus.Serviced, vehicle.Status);
+			Assert.Equal(VehicleStatus.Maintenance, vehicle.Status);
 		}
 
 		[Fact]

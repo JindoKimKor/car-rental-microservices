@@ -12,14 +12,14 @@ namespace Inventory.Domain.Entities
 	{
 		public VehicleCode VehicleCode { get; private set; }
 		public int LocationId { get; private set; }
-		public VehicleType VehicleType { get; private set; }
+		public int VehicleTypeId { get; private set; }
 		public VehicleStatus Status { get; private set; }
 
-		public Vehicle(VehicleCode vehicleCode, int locationId, VehicleType vehicleType)
+		public Vehicle(VehicleCode vehicleCode, int locationId, int vehicleTypeId)
 		{
 			VehicleCode = vehicleCode;
 			LocationId = locationId;
-			VehicleType = vehicleType;
+			VehicleTypeId = vehicleTypeId;
 			Status = VehicleStatus.Available;
 		}
 
@@ -42,7 +42,7 @@ namespace Inventory.Domain.Entities
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is reserved.");
 
-			if (Status == VehicleStatus.Serviced)
+			if (Status == VehicleStatus.Maintenance)
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is under service.");
 
@@ -64,7 +64,7 @@ namespace Inventory.Domain.Entities
 				throw new InvalidVehicleStateException(
 					"A rented vehicle cannot be sent to service.");
 
-			Status = VehicleStatus.Serviced;
+			Status = VehicleStatus.Maintenance;
 		}
 	}
 }
