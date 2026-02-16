@@ -19,31 +19,36 @@ namespace JK_Inventory.WebAPI.Controllers
 		[HttpGet]
 		public async Task<IActionResult> GetAll()
 		{
-			throw new NotImplementedException();
+			var vehicles = await _service.GetAllVehicles();
+			return Ok(vehicles);
 		}
 
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById(int id)
 		{
-			throw new NotImplementedException();
+			var vehicle = await _service.GetVehicleById(id);
+			return Ok(vehicle);
 		}
 
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] JK_CreateVehicleDto dto)
 		{
-			throw new NotImplementedException();
+			var vehicle = await _service.CreateVehicle(dto);
+			return CreatedAtAction(nameof(GetById), new { id = vehicle.Id }, vehicle);
 		}
 
 		[HttpPut("{id}/status")]
 		public async Task<IActionResult> UpdateStatus(int id, [FromBody] JK_UpdateVehicleStatusDto dto)
 		{
-			throw new NotImplementedException();
+			var vehicle = await _service.UpdateVehicleStatus(id, dto);
+			return Ok(vehicle);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
-			throw new NotImplementedException();
+			await _service.DeleteVehicle(id);
+			return NoContent();
 		}
 	}
 }
