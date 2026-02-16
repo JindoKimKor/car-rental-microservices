@@ -2,8 +2,9 @@
 {
 	public class JK_CreateVehicleDto
 	{
-		public string VehicleCode { get; set; } = string.Empty;
+		public string Make { get; set; } = string.Empty;
+		public string Model { get; set; } = string.Empty;
 		public int LocationId { get; set; }
-		public string VehicleType { get; set; } = string.Empty;
+		public int VehicleTypeId { get; set; }
 	}
 }
