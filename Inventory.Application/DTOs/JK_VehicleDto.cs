@@ -1,6 +1,6 @@
-﻿namespace Inventory.Application.DTOs
+﻿namespace JK_Inventory.Application.DTOs
 {
-	public class VehicleDto
+	public class JK_VehicleDto
 	{
 		public int Id { get; set; }
 		public string VehicleCode { get; set; } = string.Empty;

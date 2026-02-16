@@ -1,18 +1,18 @@
-﻿using Inventory.Application.DTOs;
-using Inventory.Application.Interfaces;
+﻿using JK_Inventory.Application.DTOs;
+using JK_Inventory.Application.Interfaces;
 
 namespace Inventory.Application.Services
 {
-    internal class VehicleService : IVehicleService
+    internal class JK_VehicleService : IVehicleService
     {
 		private readonly IVehicleRepository _repository;
 
-		public VehicleService(IVehicleRepository repository)
+		public JK_VehicleService(IVehicleRepository repository)
 		{
 			_repository = repository;
 		}
 
-		public Task<VehicleDto> CreateAsync(CreateVehicleDto dto)
+		public Task<JK_VehicleDto> CreateAsync(JK_CreateVehicleDto dto)
         {
             throw new NotImplementedException();
         }
@@ -22,17 +22,17 @@ namespace Inventory.Application.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<VehicleDto>> GetAllAsync()
+        public Task<IEnumerable<JK_VehicleDto>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<VehicleDto?> GetByIdAsync(int id)
+        public Task<JK_VehicleDto?> GetByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<VehicleDto> UpdateStatusAsync(int id, UpdateVehicleStatusDto dto)
+        public Task<JK_VehicleDto> UpdateStatusAsync(int id, JK_UpdateVehicleStatusDto dto)
         {
             throw new NotImplementedException();
         }

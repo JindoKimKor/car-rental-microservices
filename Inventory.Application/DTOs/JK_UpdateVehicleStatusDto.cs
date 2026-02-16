@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Inventory.Application.DTOs
+namespace JK_Inventory.Application.DTOs
 {
-	public class UpdateVehicleStatusDto
+	public class JK_UpdateVehicleStatusDto
 	{
 		public string Status { get; set; } = string.Empty;
 	}

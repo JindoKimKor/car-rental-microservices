@@ -3,9 +3,9 @@ using Inventory.Domain.Enums;
 using Inventory.Domain.Exceptions;
 using Inventory.Domain.ValueObjects;
 
-namespace Inventory.Domain.Tests
+namespace JK_Inventory.Domain.Tests
 {
-	public class VehicleTests
+	public class JK_VehicleTests
 	{
 		private Vehicle CreateDefaultVehicle()
 		{

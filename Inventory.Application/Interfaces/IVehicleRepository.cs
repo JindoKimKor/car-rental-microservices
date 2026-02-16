@@ -1,6 +1,6 @@
 ﻿using Inventory.Domain.Entities;
 
-namespace Inventory.Application.Interfaces
+namespace JK_Inventory.Application.Interfaces
 {
 	public interface IVehicleRepository
 	{
