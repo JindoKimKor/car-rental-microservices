@@ -1,5 +1,6 @@
 using Maintenance.WebAPI.Middleware;
 using Maintenance.WebAPI.Services;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,21 @@ var usageCounts = new Dictionary<string, int>();
 builder.Services.AddSingleton(usageCounts);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+	options.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+	{
+		Name = "X-Api-Key",
+		Type = SecuritySchemeType.ApiKey,
+		In = ParameterLocation.Header,
+		Description = "Enter your API key"
+	});
+
+	options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+	{
+		[new OpenApiSecuritySchemeReference("ApiKey", document)] = []
+	});
+});
 
 var app = builder.Build();
 
@@ -33,6 +48,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 
+// --- Part 2: API Key Authentication (inline middleware) ---
 const string API_KEY = "MY_SECRET_KEY_123";
 
 app.Use(async (context, next) =>
@@ -52,7 +68,8 @@ app.Use(async (context, next) =>
 	await next();
 });
 
-
+// --- Part 1: Global Exception Handling ---
+// Inline version (replaced by GlobalExceptionMiddleware class):
 //app.Use(async (context, next) =>
 //{
 //	try
@@ -62,10 +79,8 @@ app.Use(async (context, next) =>
 //	catch (Exception ex)
 //	{
 //		Console.WriteLine(ex.Message);
-
 //		context.Response.StatusCode = 500;
 //		context.Response.ContentType = "application/json";
-
 //		await context.Response.WriteAsJsonAsync(new
 //		{
 //			error = "ServerError",
@@ -74,6 +89,7 @@ app.Use(async (context, next) =>
 //	}
 //});
 
+// Class-based version (uses ILogger instead of Console.WriteLine):
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.MapControllers();
