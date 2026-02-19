@@ -15,6 +15,7 @@ builder.Services.AddHttpClient("MaintenanceApi", (sp, client) =>
 {
 	var config = sp.GetRequiredService<IConfiguration>();
 	client.BaseAddress = new Uri(config["ApiSettings:MaintenanceBaseUrl"]!);
+	client.DefaultRequestHeaders.Add("X-Api-Key", "MY_SECRET_KEY_123");
 });
 
 

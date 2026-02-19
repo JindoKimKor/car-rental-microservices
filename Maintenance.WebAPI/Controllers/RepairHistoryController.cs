@@ -11,10 +11,12 @@ namespace Maintenance.WebAPI.Controllers
     public class RepairHistoryController : ControllerBase
     {
 		private readonly IRepairHistoryService _repairHistoryService;
+		private readonly Dictionary<string, int> _usageCounts;
 
-		public RepairHistoryController(IRepairHistoryService repairHistoryService)
+		public RepairHistoryController(IRepairHistoryService repairHistoryService, Dictionary<string, int> usageCounts)
 		{
 			_repairHistoryService = repairHistoryService;
+			_usageCounts = usageCounts;
 		}
 
 		[HttpGet("{vehicleId}")]
@@ -71,5 +73,21 @@ namespace Maintenance.WebAPI.Controllers
 			return Ok();
 		}
 
+		[HttpGet("usage")]
+		public IActionResult Usage()
+		{
+			var key = Request.Headers["X-Api-Key"].ToString();
+
+			if (!_usageCounts.ContainsKey(key))
+				_usageCounts[key] = 0;
+
+			_usageCounts[key]++;
+
+			return Ok(new
+			{
+				clientId = key,
+				callCount = _usageCounts[key]
+			});
+		}
 	}
 }

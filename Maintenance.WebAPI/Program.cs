@@ -6,11 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 // Singleton to persist in-memory fake data across requests (no real DB)
 builder.Services.AddSingleton<IRepairHistoryService, FakeRepairHistoryService>();
+
+var usageCounts = new Dictionary<string, int>();
+builder.Services.AddSingleton(usageCounts);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,6 +31,27 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+
+const string API_KEY = "MY_SECRET_KEY_123";
+
+app.Use(async (context, next) =>
+{
+	if (!context.Request.Headers.TryGetValue("X-Api-Key", out var key) ||
+		key != API_KEY)
+	{
+		context.Response.StatusCode = 401;
+		await context.Response.WriteAsJsonAsync(new
+		{
+			error = "Unauthorized",
+			message = "Missing or invalid API key."
+		});
+		return;
+	}
+
+	await next();
+});
+
 
 //app.Use(async (context, next) =>
 //{
