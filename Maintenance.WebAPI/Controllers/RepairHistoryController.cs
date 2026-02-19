@@ -73,6 +73,39 @@ namespace Maintenance.WebAPI.Controllers
 			return Ok();
 		}
 
+		[HttpPost("transfer")]
+		public IActionResult Transfer(int fromId, int toId, decimal amount)
+		{
+			if (fromId <= 0 || toId <= 0)
+				return BadRequest(new { error = "InvalidParameter", message = "Repair IDs must be greater than zero." });
+
+			if (amount <= 0)
+				return BadRequest(new { error = "InvalidParameter", message = "Amount must be greater than zero." });
+
+			var fromRepair = _repairHistoryService.GetById(fromId);
+			var toRepair = _repairHistoryService.GetById(toId);
+
+			if (fromRepair == null)
+				return NotFound(new { error = "NotFound", message = $"Repair record {fromId} not found." });
+
+			if (toRepair == null)
+				return NotFound(new { error = "NotFound", message = $"Repair record {toId} not found." });
+
+			if (amount > fromRepair.Cost)
+				return BadRequest(new { error = "InsufficientFunds", message = $"Repair {fromId} only has ${fromRepair.Cost:F2}." });
+
+			fromRepair.Cost -= amount;
+			toRepair.Cost += amount;
+
+			return Ok(new
+			{
+				message = $"Transferred ${amount:F2} from repair {fromId} to repair {toId}.",
+				fromRepairId = fromId,
+				toRepairId = toId,
+				amount
+			});
+		}
+
 		[HttpGet("usage")]
 		public IActionResult Usage()
 		{

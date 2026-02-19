@@ -8,4 +8,5 @@
 		public decimal Cost { get; set; }
 		public string PerformedBy { get; set; } = string.Empty;
 	}
+
 }

@@ -1,0 +1,17 @@
+@model CarRental.MVC.Models.UsageViewModel
+
+@{
+    ViewData["Title"] = "API Usage";
+}
+
+<h2>API Usage</h2>
+
+@if (Model != null)
+{
+    <p><strong>Client:</strong> @Model.ClientId</p>
+    <p><strong>Call Count:</strong> @Model.CallCount</p>
+}
+else
+{
+    <p>No usage data available.</p>
+}

@@ -12,7 +12,7 @@ namespace Maintenance.WebAPI.Services
 			new RepairHistoryDto
 			{
 				Id = 1,
-				VehicleId = 1,
+				VehicleId = 101,
 				RepairDate = DateTime.Now.AddDays(-10),
 				Description = "Oil change",
 				Cost = 89.99m,
@@ -21,7 +21,7 @@ namespace Maintenance.WebAPI.Services
 			new RepairHistoryDto
 			{
 				Id = 2,
-				VehicleId = 1,
+				VehicleId = 101,
 				RepairDate = DateTime.Now.AddDays(-40),
 				Description = "Brake pad replacement",
 				Cost = 350.00m,
@@ -32,6 +32,11 @@ namespace Maintenance.WebAPI.Services
 		public List<RepairHistoryDto> GetByVehicleId(int vehicleId)
 		{
 			return _repairs.Where(r => r.VehicleId == vehicleId).ToList();
+		}
+
+		public RepairHistoryDto? GetById(int id)
+		{
+			return _repairs.FirstOrDefault(r => r.Id == id);
 		}
 
 		public RepairHistoryDto AddRepair(RepairHistoryDto repair)
