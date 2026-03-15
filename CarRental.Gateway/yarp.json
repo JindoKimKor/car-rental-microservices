@@ -1,0 +1,33 @@
+{
+	"ReverseProxy": {
+		"Routes": {
+			"inventory-route": {
+				"ClusterId": "inventory-cluster",
+				"Match": {
+					"Path": "/inventory-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" }
+				]
+			},
+			"maintenance-route": {
+				"ClusterId": "maintenance-cluster",
+				"Match": {
+					"Path": "/maintenance-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" }
+				]
+			},
+			"customer-route": {
+				"ClusterId": "customer-cluster",
+				"Match": {
+					"Path": "/customer-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" }
+				]
+			}
+		}
+	}
+}

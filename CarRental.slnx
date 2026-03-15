@@ -18,4 +18,5 @@
   <Folder Name="/UI/">
     <Project Path="CarRental.MVC/CarRental.MVC.csproj" Id="4351d495-89b7-4c8b-8168-2b5b5b4e385f" />
   </Folder>
+  <Project Path="CarRental.Gateway/CarRental.Gateway.csproj" Id="55c97a3d-8d6b-4a5d-a0b0-9c807e1a79ef" />
 </Solution>
