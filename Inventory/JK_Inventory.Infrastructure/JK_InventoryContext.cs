@@ -34,12 +34,12 @@ namespace JK_Inventory.Infrastructure
 
 				entity.HasOne(e => e.Location)
 					.WithMany()
-					.HasForeignKey("VehicleLocationId")
+					.HasForeignKey(e => e.VehicleLocationId)
 					.OnDelete(DeleteBehavior.ClientSetNull);
 
 				entity.HasOne(e => e.Status)
 					.WithMany()
-					.HasForeignKey("VehicleStatusId")
+					.HasForeignKey(e => e.VehicleStatusId)
 					.OnDelete(DeleteBehavior.ClientSetNull);
 			});
 
@@ -54,11 +54,7 @@ namespace JK_Inventory.Infrastructure
 				{
 					vc.Property(v => v.Make).HasColumnName("Make").HasMaxLength(50).IsRequired();
 					vc.Property(v => v.Model).HasColumnName("Model").HasMaxLength(50).IsRequired();
-
-					vc.HasOne(v => v.Type)
-						.WithMany()
-						.HasForeignKey("VehicleTypeId")
-						.OnDelete(DeleteBehavior.ClientSetNull);
+					vc.Property(v => v.Type).HasColumnName("VehicleTypeId");
 				});
 			});
 
@@ -109,6 +105,39 @@ namespace JK_Inventory.Infrastructure
 				new { Id = 2, Name = "Reserved" },
 				new { Id = 3, Name = "Rented" },
 				new { Id = 4, Name = "Maintenance" }
+			);
+
+			// Vehicle seed data
+			modelBuilder.Entity<Vehicle>().HasData(
+				new { Id = 1 },
+				new { Id = 2 },
+				new { Id = 3 },
+				new { Id = 4 },
+				new { Id = 5 },
+				new { Id = 6 }
+			);
+
+			modelBuilder.Entity<Vehicle>().OwnsOne(e => e.VehicleCode).HasData(
+				new { VehicleId = 1, Make = "Toyota", Model = "Camry", Type = VehicleTypeEnum.Sedan },
+				new { VehicleId = 2, Make = "Honda", Model = "Civic", Type = VehicleTypeEnum.Sedan },
+				new { VehicleId = 3, Make = "Ford", Model = "Escape", Type = VehicleTypeEnum.SUV },
+				new { VehicleId = 4, Make = "Toyota", Model = "RAV4", Type = VehicleTypeEnum.SUV },
+				new { VehicleId = 5, Make = "Ford", Model = "F-150", Type = VehicleTypeEnum.Truck },
+				new { VehicleId = 6, Make = "Chevy", Model = "Express", Type = VehicleTypeEnum.Van }
+			);
+
+			// Inventory seed data
+			modelBuilder.Entity<InventoryEntity>().HasData(
+				new { Id = 1, VehicleId = 1, VehicleLocationId = 1, VehicleStatusId = 1 },
+				new { Id = 2, VehicleId = 2, VehicleLocationId = 1, VehicleStatusId = 2 },
+				new { Id = 3, VehicleId = 3, VehicleLocationId = 2, VehicleStatusId = 1 },
+				new { Id = 4, VehicleId = 4, VehicleLocationId = 2, VehicleStatusId = 3 },
+				new { Id = 5, VehicleId = 5, VehicleLocationId = 3, VehicleStatusId = 1 },
+				new { Id = 6, VehicleId = 6, VehicleLocationId = 3, VehicleStatusId = 4 },
+				new { Id = 7, VehicleId = 1, VehicleLocationId = 4, VehicleStatusId = 1 },
+				new { Id = 8, VehicleId = 2, VehicleLocationId = 4, VehicleStatusId = 2 },
+				new { Id = 9, VehicleId = 3, VehicleLocationId = 1, VehicleStatusId = 1 },
+				new { Id = 10, VehicleId = 4, VehicleLocationId = 2, VehicleStatusId = 3 }
 			);
 		}
 	}
