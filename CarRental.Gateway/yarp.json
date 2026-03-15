@@ -7,7 +7,12 @@
 					"Path": "/inventory-service/{**catch-all}"
 				},
 				"Transforms": [
-					{ "PathPattern": "{**catch-all}" }
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
+
 				]
 			},
 			"maintenance-route": {
@@ -17,7 +22,11 @@
 					"Path": "/maintenance-service/{**catch-all}"
 				},
 				"Transforms": [
-					{ "PathPattern": "{**catch-all}" }
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
 				]
 			},
 			"customer-route": {
@@ -26,7 +35,11 @@
 					"Path": "/customer-service/{**catch-all}"
 				},
 				"Transforms": [
-					{ "PathPattern": "{**catch-all}" }
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
 				]
 			}
 		}

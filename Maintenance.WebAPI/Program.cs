@@ -1,5 +1,6 @@
-using Maintenance.WebAPI.Services;
 using CarRental.SharedKernel.Exceptions;
+using CarRental.SharedKernel.Middleware;
+using Maintenance.WebAPI.Services;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,26 +52,28 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 // --- Part 2: API Key Authentication (inline middleware) ---
-const string API_KEY = "MY_SECRET_KEY_123";
+//const string API_KEY = "MY_SECRET_KEY_123";
 
-app.Use(async (context, next) =>
-{
-	if (!context.Request.Headers.TryGetValue("X-Api-Key", out var key) ||
-		key != API_KEY)
-	{
-		context.Response.StatusCode = 401;
-		await context.Response.WriteAsJsonAsync(new
-		{
-			error = "Unauthorized",
-			message = "Missing or invalid API key."
-		});
-		return;
-	}
+//app.Use(async (context, next) =>
+//{
+//	if (!context.Request.Headers.TryGetValue("X-Api-Key", out var key) ||
+//		key != API_KEY)
+//	{
+//		context.Response.StatusCode = 401;
+//		await context.Response.WriteAsJsonAsync(new
+//		{
+//			error = "Unauthorized",
+//			message = "Missing or invalid API key."
+//		});
+//		return;
+//	}
 
-	await next();
-});
+//	await next();
+//});
 
 app.UseExceptionHandler();
+
+app.UseMiddleware<GatewayOnlyMiddleware>();
 
 app.MapControllers();
 
