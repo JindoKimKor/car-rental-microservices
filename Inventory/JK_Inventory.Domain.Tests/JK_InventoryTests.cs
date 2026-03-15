@@ -210,5 +210,32 @@ namespace JK_Inventory.Domain.Tests
 			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.SUV);
 			Assert.NotEqual(code1, code2);
 		}
+		// ============================================
+		// VehicleCode — IsSameVehicle
+		// ============================================
+
+		[Fact]
+		public void IsSameVehicle_SameValues_ShouldReturnTrue()
+		{
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			Assert.True(code1.IsSameVehicle(code2));
+		}
+
+		[Fact]
+		public void IsSameVehicle_DifferentMake_ShouldReturnFalse()
+		{
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			var code2 = new VehicleCode("Honda", "Camry", VehicleType.Sedan);
+			Assert.False(code1.IsSameVehicle(code2));
+		}
+
+		[Fact]
+		public void IsSameVehicle_DifferentType_ShouldReturnFalse()
+		{
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.SUV);
+			Assert.False(code1.IsSameVehicle(code2));
+		}
 	}
 }

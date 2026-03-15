@@ -22,6 +22,9 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			yield return Type;
 		}
 
+		// Checks if two vehicle codes represent the same vehicle type
+		public bool IsSameVehicle(VehicleCode other) => Equals(other);
+
 		public override string ToString() => $"{Make}-{Model}-{Type}";
 	}
 }
