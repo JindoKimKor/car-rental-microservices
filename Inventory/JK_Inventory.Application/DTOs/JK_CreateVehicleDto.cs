@@ -1,4 +1,4 @@
-﻿namespace JK_Inventory.Application.DTOs
+namespace JK_Inventory.Application.DTOs
 {
 	public class JK_CreateVehicleDto
 	{

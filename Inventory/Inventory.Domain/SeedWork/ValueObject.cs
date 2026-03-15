@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Inventory.Domain.Common
+namespace Inventory.Domain.SeedWork
 {
 	public abstract class ValueObject
 	{
 		protected static bool EqualOperator(ValueObject left, ValueObject right)
 		{
 			if (ReferenceEquals(left, null) ^ ReferenceEquals(right, null))
+			{
 				return false;
-
-			return ReferenceEquals(left, right) || left.Equals(right);
+			}
+			return ReferenceEquals(left, null) || left.Equals(right);
 		}
 
 		protected static bool NotEqualOperator(ValueObject left, ValueObject right)
@@ -24,7 +21,9 @@ namespace Inventory.Domain.Common
 		public override bool Equals(object? obj)
 		{
 			if (obj == null || obj.GetType() != GetType())
+			{
 				return false;
+			}
 
 			var other = (ValueObject)obj;
 			return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
@@ -37,14 +36,9 @@ namespace Inventory.Domain.Common
 				.Aggregate((x, y) => x ^ y);
 		}
 
-		public static bool operator ==(ValueObject? left, ValueObject? right)
+		public ValueObject GetCopy()
 		{
-			return EqualOperator(left, right);
-		}
-
-		public static bool operator !=(ValueObject? left, ValueObject? right)
-		{
-			return NotEqualOperator(left, right);
+			return (this.MemberwiseClone() as ValueObject)!;
 		}
 	}
 }

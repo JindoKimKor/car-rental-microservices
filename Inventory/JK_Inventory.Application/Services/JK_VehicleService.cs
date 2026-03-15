@@ -1,86 +1,82 @@
-using Inventory.Domain.Entities;
-using Inventory.Domain.Enums;
-using Inventory.Domain.ValueObjects;
+using Inventory.Domain.AggregatesModel.InventoryAggregate;
 using JK_Inventory.Application.DTOs;
 using JK_Inventory.Application.Interfaces;
+using InventoryEntity = Inventory.Domain.AggregatesModel.InventoryAggregate.Inventory;
 
 namespace Inventory.Application.Services
 {
 	public class JK_VehicleService : IVehicleService
 	{
-		private readonly IVehicleRepository _repository;
+		private readonly IInventoryRepository _repository;
 
-		public JK_VehicleService(IVehicleRepository repository)
+		public JK_VehicleService(IInventoryRepository repository)
 		{
 			_repository = repository;
 		}
 
 		public async Task<JK_VehicleDto?> GetVehicleById(int id)
 		{
-			var vehicle = await _repository.FindByIdAsync(id);
-			if (vehicle == null)
+			var inventory = await _repository.FindByIdAsync(id);
+			if (inventory == null)
 				return null;
 
-			return ToDto(vehicle);
+			return ToDto(inventory);
 		}
 
 		public async Task<IEnumerable<JK_VehicleDto>> GetAllVehicles()
 		{
-			var vehicles = await _repository.FindAllAsync();
-			return vehicles.Select(ToDto);
+			var inventories = await _repository.FindAllAsync();
+			return inventories.Select(ToDto);
 		}
 
 		public async Task CreateVehicle(JK_CreateVehicleDto dto)
 		{
-			var vehicleCode = new VehicleCode(dto.Make, dto.Model);
-			var locationId = new LocationId(dto.LocationId);
-			var vehicleTypeId = new VehicleTypeId(dto.VehicleTypeId);
-			var vehicle = new Vehicle(vehicleCode, locationId, vehicleTypeId);
-			await _repository.SaveAsync(vehicle);
+			if (string.IsNullOrWhiteSpace(dto.Make))
+				throw new ArgumentException("Make is required.");
+			if (string.IsNullOrWhiteSpace(dto.Model))
+				throw new ArgumentException("Model is required.");
+			if (!Enum.IsDefined(typeof(VehicleLocationEnum), dto.LocationId))
+				throw new ArgumentException($"Invalid LocationId: {dto.LocationId}");
+			if (!Enum.IsDefined(typeof(VehicleTypeEnum), dto.VehicleTypeId))
+				throw new ArgumentException($"Invalid VehicleTypeId: {dto.VehicleTypeId}");
+
+			var vehicleType = (VehicleTypeEnum)dto.VehicleTypeId;
+			var vehicleCode = new VehicleCode(dto.Make, dto.Model, vehicleType);
+			var vehicle = new Vehicle(vehicleCode);
+			var inventory = new InventoryEntity(vehicle, dto.LocationId);
+
+			_repository.Add(inventory);
+			await _repository.UnitOfWork.SaveChangesAsync();
 		}
 
 		public async Task<JK_VehicleDto> UpdateVehicleStatus(int id, JK_UpdateVehicleStatusDto dto)
 		{
-			var vehicle = await _repository.FindByIdAsync(id)
+			var inventory = await _repository.FindByIdAsync(id)
 				?? throw new KeyNotFoundException($"Vehicle with id {id} not found.");
 
-			var status = Enum.Parse<VehicleStatus>(dto.Status, ignoreCase: true);
+			var newStatus = Enum.Parse<VehicleStatusEnum>(dto.Status, ignoreCase: true);
+			inventory.UpdateStatus(newStatus);
 
-			switch (status)
-			{
-				case VehicleStatus.Available:
-					vehicle.MarkAvailable();
-					break;
-				case VehicleStatus.Rented:
-					vehicle.MarkRented();
-					break;
-				case VehicleStatus.Reserved:
-					vehicle.MarkReserved();
-					break;
-				case VehicleStatus.Maintenance:
-					vehicle.MarkServiced();
-					break;
-			}
-
-			await _repository.SaveAsync(vehicle);
-			return ToDto(vehicle);
+			await _repository.UnitOfWork.SaveChangesAsync();
+			return ToDto(inventory);
 		}
 
 		public async Task DeleteVehicle(int id)
 		{
 			await _repository.RemoveAsync(id);
+			await _repository.UnitOfWork.SaveChangesAsync();
 		}
 
-		private JK_VehicleDto ToDto(Vehicle vehicle)
+		private JK_VehicleDto ToDto(InventoryEntity inventory)
 		{
 			return new JK_VehicleDto
 			{
-				Id = vehicle.Id,
-				Make = vehicle.VehicleCode.Make,
-				Model = vehicle.VehicleCode.Model,
-				LocationId = vehicle.LocationId.Value,
-				VehicleTypeId = vehicle.VehicleTypeId.Value,
-				Status = vehicle.Status.ToString()
+				Id = inventory.Id,
+				Make = inventory.Vehicle.VehicleCode.Make,
+				Model = inventory.Vehicle.VehicleCode.Model,
+				LocationId = inventory.VehicleLocationId,
+				VehicleTypeId = (int)inventory.Vehicle.VehicleCode.Type,
+				Status = ((VehicleStatusEnum)inventory.VehicleStatusId).ToString()
 			};
 		}
 	}
