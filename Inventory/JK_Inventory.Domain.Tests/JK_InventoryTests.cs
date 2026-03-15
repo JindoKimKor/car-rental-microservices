@@ -10,7 +10,7 @@ namespace JK_Inventory.Domain.Tests
 		private Vehicle CreateDefaultVehicle()
 		{
 			return new Vehicle(
-				new VehicleCode("Toyota", "Camry", VehicleType.Sedan)
+				new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan)
 			);
 		}
 
@@ -18,7 +18,7 @@ namespace JK_Inventory.Domain.Tests
 		{
 			return new InventoryEntity(
 				CreateDefaultVehicle(),
-				VehicleLocation.Kitchener
+				(int)VehicleLocationEnum.Kitchener
 			);
 		}
 
@@ -62,7 +62,7 @@ namespace JK_Inventory.Domain.Tests
 		public void NewInventory_ShouldHaveAvailableStatus()
 		{
 			var inventory = CreateDefaultInventory();
-			Assert.Equal(VehicleStatus.Available, inventory.Status);
+			Assert.Equal((int)VehicleStatusEnum.Available, inventory.VehicleStatusId);
 		}
 
 		[Fact]
@@ -77,7 +77,7 @@ namespace JK_Inventory.Domain.Tests
 		public void NewInventory_ShouldHaveLocation()
 		{
 			var inventory = CreateDefaultInventory();
-			Assert.Equal(VehicleLocation.Kitchener, inventory.Location);
+			Assert.Equal((int)VehicleLocationEnum.Kitchener, inventory.VehicleLocationId);
 		}
 
 		// ============================================
@@ -88,35 +88,35 @@ namespace JK_Inventory.Domain.Tests
 		public void UpdateStatus_ToRented_WhenAvailable_ShouldSucceed()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Rented);
-			Assert.Equal(VehicleStatus.Rented, inventory.Status);
+			inventory.UpdateStatus(VehicleStatusEnum.Rented);
+			Assert.Equal((int)VehicleStatusEnum.Rented, inventory.VehicleStatusId);
 		}
 
 		[Fact]
 		public void UpdateStatus_ToRented_WhenAlreadyRented_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Rented);
+			inventory.UpdateStatus(VehicleStatusEnum.Rented);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Rented));
+				inventory.UpdateStatus(VehicleStatusEnum.Rented));
 		}
 
 		[Fact]
 		public void UpdateStatus_ToRented_WhenReserved_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Reserved);
+			inventory.UpdateStatus(VehicleStatusEnum.Reserved);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Rented));
+				inventory.UpdateStatus(VehicleStatusEnum.Rented));
 		}
 
 		[Fact]
 		public void UpdateStatus_ToRented_WhenMaintenance_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Maintenance);
+			inventory.UpdateStatus(VehicleStatusEnum.Maintenance);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Rented));
+				inventory.UpdateStatus(VehicleStatusEnum.Rented));
 		}
 
 		// ============================================
@@ -127,17 +127,17 @@ namespace JK_Inventory.Domain.Tests
 		public void UpdateStatus_ToReserved_WhenAvailable_ShouldSucceed()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Reserved);
-			Assert.Equal(VehicleStatus.Reserved, inventory.Status);
+			inventory.UpdateStatus(VehicleStatusEnum.Reserved);
+			Assert.Equal((int)VehicleStatusEnum.Reserved, inventory.VehicleStatusId);
 		}
 
 		[Fact]
 		public void UpdateStatus_ToReserved_WhenNotAvailable_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Rented);
+			inventory.UpdateStatus(VehicleStatusEnum.Rented);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Reserved));
+				inventory.UpdateStatus(VehicleStatusEnum.Reserved));
 		}
 
 		// ============================================
@@ -148,18 +148,18 @@ namespace JK_Inventory.Domain.Tests
 		public void UpdateStatus_ToAvailable_WhenRented_ShouldSucceed()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Rented);
-			inventory.UpdateStatus(VehicleStatus.Available);
-			Assert.Equal(VehicleStatus.Available, inventory.Status);
+			inventory.UpdateStatus(VehicleStatusEnum.Rented);
+			inventory.UpdateStatus(VehicleStatusEnum.Available);
+			Assert.Equal((int)VehicleStatusEnum.Available, inventory.VehicleStatusId);
 		}
 
 		[Fact]
 		public void UpdateStatus_ToAvailable_WhenReserved_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Reserved);
+			inventory.UpdateStatus(VehicleStatusEnum.Reserved);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Available));
+				inventory.UpdateStatus(VehicleStatusEnum.Available));
 		}
 
 		// ============================================
@@ -170,17 +170,17 @@ namespace JK_Inventory.Domain.Tests
 		public void UpdateStatus_ToMaintenance_WhenAvailable_ShouldSucceed()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Maintenance);
-			Assert.Equal(VehicleStatus.Maintenance, inventory.Status);
+			inventory.UpdateStatus(VehicleStatusEnum.Maintenance);
+			Assert.Equal((int)VehicleStatusEnum.Maintenance, inventory.VehicleStatusId);
 		}
 
 		[Fact]
 		public void UpdateStatus_ToMaintenance_WhenRented_ShouldThrow()
 		{
 			var inventory = CreateDefaultInventory();
-			inventory.UpdateStatus(VehicleStatus.Rented);
+			inventory.UpdateStatus(VehicleStatusEnum.Rented);
 			Assert.Throws<InvalidVehicleStateException>(() =>
-				inventory.UpdateStatus(VehicleStatus.Maintenance));
+				inventory.UpdateStatus(VehicleStatusEnum.Maintenance));
 		}
 
 		// ============================================
@@ -190,26 +190,27 @@ namespace JK_Inventory.Domain.Tests
 		[Fact]
 		public void VehicleCode_SameValues_ShouldBeEqual()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
 			Assert.Equal(code1, code2);
 		}
 
 		[Fact]
 		public void VehicleCode_DifferentValues_ShouldNotBeEqual()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Honda", "Civic", VehicleType.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Honda", "Civic", VehicleTypeEnum.Sedan);
 			Assert.NotEqual(code1, code2);
 		}
 
 		[Fact]
 		public void VehicleCode_SameMakeModel_DifferentType_ShouldNotBeEqual()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.SUV);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.SUV);
 			Assert.NotEqual(code1, code2);
 		}
+
 		// ============================================
 		// VehicleCode — IsSameVehicle
 		// ============================================
@@ -217,24 +218,24 @@ namespace JK_Inventory.Domain.Tests
 		[Fact]
 		public void IsSameVehicle_SameValues_ShouldReturnTrue()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
 			Assert.True(code1.IsSameVehicle(code2));
 		}
 
 		[Fact]
 		public void IsSameVehicle_DifferentMake_ShouldReturnFalse()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Honda", "Camry", VehicleType.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Honda", "Camry", VehicleTypeEnum.Sedan);
 			Assert.False(code1.IsSameVehicle(code2));
 		}
 
 		[Fact]
 		public void IsSameVehicle_DifferentType_ShouldReturnFalse()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleType.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleType.SUV);
+			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.SUV);
 			Assert.False(code1.IsSameVehicle(code2));
 		}
 	}
