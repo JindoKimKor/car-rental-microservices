@@ -1,6 +1,7 @@
 using Inventory.Application.Services;
+using Inventory.Domain.AggregatesModel.InventoryAggregate;
 using JK_Inventory.Application.Interfaces;
-using JK_Inventory.Infrastructure.Persistence;
+using JK_Inventory.Infrastructure;
 using JK_Inventory.Infrastructure.Repositories;
 using JK_Inventory.WebAPI.Middleware;
 
@@ -13,8 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<JK_InventoryDbContext>();
-builder.Services.AddScoped<IVehicleRepository, JK_VehicleRepository>();
+builder.Services.AddDbContext<JK_InventoryContext>();
+builder.Services.AddScoped<IInventoryRepository, JK_InventoryRepository>();
 builder.Services.AddScoped<IVehicleService, JK_VehicleService>();
 
 var app = builder.Build();
