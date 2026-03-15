@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-using Customer.WebAPI.Data;
 using CarRental.SharedKernel.Exceptions;
+using CarRental.SharedKernel.Middleware;
+using Customer.WebAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler();
+
+app.UseMiddleware<GatewayOnlyMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -1,9 +1,10 @@
+using CarRental.SharedKernel.Exceptions;
+using CarRental.SharedKernel.Middleware;
 using Inventory.Application.Services;
 using Inventory.Domain.AggregatesModel.InventoryAggregate;
 using JK_Inventory.Application.Interfaces;
 using JK_Inventory.Infrastructure;
 using JK_Inventory.Infrastructure.Repositories;
-using CarRental.SharedKernel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler();
+
+app.UseMiddleware<GatewayOnlyMiddleware>();
 
 app.UseHttpsRedirection();
 

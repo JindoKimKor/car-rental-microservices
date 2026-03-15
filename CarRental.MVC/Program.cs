@@ -3,19 +3,26 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Register HttpClient for Customer WebAPI
-builder.Services.AddHttpClient("CustomerAPI", (sp, client) =>
+// Gateway Configuration
+var gatewayUrl = builder.Configuration["ApiSettings:GatewayBaseUrl"]!;
+var apiKey = builder.Configuration["ApiSettings:ApiKey"]!;
+
+builder.Services.AddHttpClient("CustomerAPI", client =>
 {
-	var config = sp.GetRequiredService<IConfiguration>();
-	client.BaseAddress = new Uri(config["ApiSettings:CustomerApiBaseUrl"]!);
+	client.BaseAddress = new Uri($"{gatewayUrl}/customer-service/api/");
+	client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
 });
 
-// Register HttpClient for Maintenance API
-builder.Services.AddHttpClient("MaintenanceApi", (sp, client) =>
+builder.Services.AddHttpClient("MaintenanceApi", client =>
 {
-	var config = sp.GetRequiredService<IConfiguration>();
-	client.BaseAddress = new Uri(config["ApiSettings:MaintenanceBaseUrl"]!);
-	client.DefaultRequestHeaders.Add("X-Api-Key", "MY_SECRET_KEY_123");
+	client.BaseAddress = new Uri($"{gatewayUrl}/maintenance-service/");
+	client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+});
+
+builder.Services.AddHttpClient("InventoryAPI", client =>
+{
+	client.BaseAddress = new Uri($"{gatewayUrl}/inventory-service/api/");
+	client.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
 });
 
 
