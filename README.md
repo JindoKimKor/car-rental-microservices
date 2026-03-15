@@ -1,174 +1,114 @@
-# Vehicle Inventory Microservice
+# CarRental Microservice Platform
 
-PROG3176 Assignment 1
+PROG3176 Assignment 2
 
 ## Architecture Overview
 
-Vehicle Inventory Microservice built with **Clean Architecture** and **Domain-Driven Design (DDD)**. Dependencies point inward - outer layers depend on inner layers, never the reverse.
+CarRental is a microservice platform with 3 backend services, an API Gateway, and an MVC client. All client traffic flows through the Gateway — no direct access to backend services.
 
-```mermaid
-graph LR
-    WebAPI --> Application
-    WebAPI -.->|DI registration only| Infrastructure
-    Infrastructure --> Application
-    Application --> Domain
-
-    subgraph Inventory/
-        WebAPI["JK_Inventory.WebAPI<br/><i>REST API, DI, Middleware</i>"]
-        Infrastructure["JK_Inventory.Infrastructure<br/><i>EF Core, Repository impl</i>"]
-        Application["JK_Inventory.Application<br/><i>Service, DTOs, Interfaces</i>"]
-        Domain["Inventory.Domain<br/><i>Entities, Value Objects, Rules</i>"]
-    end
+```
+                     CarRental.MVC
+                         │
+                    [API Key Auth]
+                         │
+                   CarRental.Gateway
+                    (YARP Reverse Proxy)
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+     [Rate Limit]        │              │
+          │              │              │
+          ▼              ▼              ▼
+   Inventory        Maintenance     Customer
+   WebAPI            WebAPI          WebAPI
+   (:7253)           (:7228)        (:7238)
 ```
 
-| Layer | Project | Depends On |
-|-------|---------|------------|
-| Domain | `Inventory.Domain` | None |
-| Application | `JK_Inventory.Application` | Domain |
-| Infrastructure | `JK_Inventory.Infrastructure` | Application, Domain |
-| WebAPI | `JK_Inventory.WebAPI` | Application, Infrastructure* |
+## Projects
 
-\* Infrastructure reference is only for DI registration (Composition Root), not architectural dependency.
+| Project | Layer | Description |
+|---------|-------|-------------|
+| `CarRental.Gateway` | Gateway | YARP reverse proxy, API Key auth, Rate Limiting |
+| `CarRental.SharedKernel` | Shared | GlobalExceptionHandler, GatewayOnlyMiddleware |
+| `CarRental.MVC` | UI | MVC client — communicates only through Gateway |
+| `Inventory.Domain` | Domain | SeedWork, InventoryAggregate (DDD) |
+| `JK_Inventory.Application` | Application | VehicleService, DTOs, Interfaces |
+| `JK_Inventory.Infrastructure` | Infrastructure | Code-First DbContext, Repository |
+| `JK_Inventory.WebAPI` | WebAPI | REST endpoints for Inventory |
+| `Maintenance.WebAPI` | WebAPI | Repair history service |
+| `Customer.WebAPI` | WebAPI | Customer CRUD service |
+| `JK_Inventory.Domain.Tests` | Tests | 23 unit tests |
 
-## Explanation of Clean Architecture layers
+## Assignment 2 Changes
 
-### Domain (`Inventory.Domain`)
+### 1. API Gateway (YARP)
+- Single entry point for all client-to-service communication
+- YARP reverse proxy with 3 routes (inventory, maintenance, customer)
+- Config split: `yarp.json` (routes) + `yarp.Development.json` (clusters) — DRY
+- API Key authentication middleware — validates `X-Api-Key` header
+- Rate Limiting on maintenance-route (5 req/10sec, 429 on exceed)
+- Direct access blocking via `GatewayOnlyMiddleware` (SharedKernel) — 403 Forbidden
 
-The innermost layer. Contains business rules and has **zero external dependencies** (no EF Core, no ASP.NET).
+### 2. Global Exception Handling (SharedKernel)
+- `GlobalExceptionHandler` implementing `IExceptionHandler` (.NET 8 pattern)
+- Consistent ProblemDetails error format across all 3 WebAPIs
+- Exception mapping: ArgumentException→400, KeyNotFoundException→404, fallback→500
+- Replaced individual middleware in each WebAPI (DRY)
 
-- `Common/`
-  - `Entity` - Base class providing `Id` property for all entities
-  - `IAggregateRoot` - Marker interface identifying which entities can have repositories
-  - `ValueObject` - Base class with value-based equality (`GetEqualityComponents()`)
-- `Entities/`
-  - `Vehicle` - Aggregate Root. Encapsulates status transition rules (e.g., a rented vehicle cannot be sent to maintenance)
-- `ValueObjects/`
-  - `VehicleCode` - Wraps Make + Model strings. Validates non-null/empty at creation
-  - `LocationId` - Wraps location FK int. Rejects values ≤ 0 at creation
-  - `VehicleTypeId` - Wraps vehicle type FK int. Rejects values ≤ 0 at creation
-- `Enums/`
-  - `VehicleStatus` - Available, Reserved, Rented, Maintenance
-- `Exceptions/`
-  - `InvalidVehicleStateException` - Thrown when a status transition violates business rules
-
-### Application (`JK_Inventory.Application`)
-
-Defines **what the system can do** through interfaces and orchestrates use cases. References only Domain.
-
-- `Interfaces/`
-  - `IRepository<T>` - Generic CRUD interface with `where T : Entity, IAggregateRoot` constraint
-  - `IVehicleRepository` - Extends `IRepository<Vehicle>`. Currently empty (common CRUD is sufficient)
-  - `IVehicleService` - Use case contract (CreateVehicle, UpdateVehicleStatus, GetById, GetAll, Delete)
-- `DTOs/`
-  - `JK_CreateVehicleDto` - Make, Model, LocationId, VehicleTypeId
-  - `JK_UpdateVehicleStatusDto` - NewStatus
-  - `JK_VehicleDto` - Full vehicle representation for API responses
-- `Services/`
-  - `JK_VehicleService` - Implements `IVehicleService`. Converts DTOs ↔ Domain entities, calls Repository
-
-### Infrastructure (`JK_Inventory.Infrastructure`)
-
-Implements Application interfaces with **concrete technology** (EF Core + SQL Server).
-
-- `Persistence/`
-  - `JK_InventoryDbContext` - EF Core DbContext (DB-first scaffolded from SQL Server)
-  - `Entities/` - EF entity classes (`JkInventory`, `JkVehicle`, `JkVehicleType`, `JkVehicleStatus`, `JkVehicleLocation`)
-- `Repositories/`
-  - `JK_VehicleRepository` - Implements `IVehicleRepository`. Maps between DB entities (JkInventory + JkVehicle) and Domain entity (Vehicle)
-
-### WebAPI (`JK_Inventory.WebAPI`)
-
-Entry point. Exposes REST endpoints and serves as the **Composition Root** (DI wiring).
-
-- `Controllers/`
-  - `JK_VehiclesController` - 5 REST endpoints (GET all, GET by id, POST, PUT status, DELETE)
-- `Middleware/`
-  - `JK_ExceptionMiddleware` - Catches domain exceptions and maps to HTTP status codes (404, 400, 500)
-- `Program.cs` - DI registration (`AddDbContext`, `AddScoped` for Repository and Service) + Swagger configuration
-
-## Domain Model and Business Rules
-
-### Vehicle (Aggregate Root)
-
-The `Vehicle` entity combines two database tables (`JK_Vehicle` + `JK_Inventory`) into a single domain object.
-
-| Property | Type | Description |
-|----------|------|-------------|
-| Id | `int` | Unique identifier (from `Entity` base) |
-| VehicleCode | `VehicleCode` | Make + Model |
-| LocationId | `LocationId` | Vehicle location FK |
-| VehicleTypeId | `VehicleTypeId` | Vehicle type FK |
-| Status | `VehicleStatus` | Current status |
-
-### Status Transition Rules
-
-```mermaid
-stateDiagram-v2
-    Available --> Reserved : MarkReserved()
-    Available --> Rented : MarkRented()
-    Available --> Maintenance : MarkServiced()
-    Rented --> Available : MarkAvailable()
-    Maintenance --> Available : MarkAvailable()
-```
-
-Blocked transitions (throw `InvalidVehicleStateException`):
-
-- **Reserved → Available** - Must be explicitly released, cannot directly revert
-- **Reserved → Rented** - A reserved vehicle cannot be rented
-- **Rented → Rented** - Already rented
-- **Rented → Maintenance** - Must be returned first
-
-### Value Object Validation
-
-Value Objects reject invalid input at **creation time**, before it enters the domain:
-
-| Value Object | Rule | Example |
-|-------------|------|---------|
-| `VehicleCode` | Make and Model must be non-null and non-empty | `new VehicleCode("", "Camry")` → `ArgumentException` |
-| `LocationId` | Must be > 0 | `new LocationId(0)` → `ArgumentException` |
-| `VehicleTypeId` | Must be > 0 | `new VehicleTypeId(-1)` → `ArgumentException` |
-
-### Generic Repository Constraint
-
-```csharp
-public interface IRepository<T> where T : Entity, IAggregateRoot
-```
-
-Only classes that implement both `Entity` and `IAggregateRoot` can be used as a repository target. This enforces the DDD rule - **only Aggregate Roots have Repositories** - at compile time.
+### 3. DDD Fixes (Inventory Service)
+- Full domain redesign based on eShopOnContainers reference architecture
+- `Inventory` as Aggregate Root (was Vehicle), `Vehicle` as Child Entity
+- SeedWork: Entity, ValueObject, IAggregateRoot, IRepository<T>, IUnitOfWork
+- Enum+Entity dual pattern for lookup tables (VehicleStatus, VehicleType, VehicleLocation)
+- Repository interfaces in Domain layer (was Application)
+- Code-First: Domain Entity = DB table (removed scaffold entities)
+- 23 unit tests covering status transitions, entity relationships, value object equality
 
 ## Run Instructions
 
 ### Prerequisites
-
 - .NET 10 SDK
 - SQL Server (LocalDB or full instance)
 
-### 1. Create the Database
-
-Run the included SQL script in SQL Server Management Studio (SSMS) or `sqlcmd`:
-
-```
-Inventory/JK_Inventory.Infrastructure/Scripts/JK_VehicleInventoryDb.sql
+### 1. Database Setup
+```bash
+# From solution root — creates DB from Code-First migration
+dotnet ef database update --project Inventory/JK_Inventory.Infrastructure --startup-project Inventory/JK_Inventory.WebAPI
 ```
 
-This script creates the `JK_VehicleInventoryDb` database with all 5 tables (`JK_Vehicle`, `JK_VehicleType`, `JK_VehicleStatus`, `JK_VehicleLocation`, `JK_Inventory`) using the assignment naming convention (`JK_` prefix), along with seed data.
+### 2. Run All Services
+Set **Multiple Startup Projects** in Visual Studio:
+1. JK_Inventory.WebAPI → Start
+2. Customer.WebAPI → Start
+3. Maintenance.WebAPI → Start
+4. CarRental.Gateway → Start (last)
 
-### 2. Run the WebAPI
-
+Or run individually:
 ```bash
 dotnet run --project Inventory/JK_Inventory.WebAPI
+dotnet run --project Customer.WebAPI
+dotnet run --project Maintenance.WebAPI
+dotnet run --project CarRental.Gateway
 ```
 
-All dependencies (DbContext, Repository, Service) are registered via DI in `Program.cs` — no additional configuration needed.
+### 3. Test via Gateway
+```bash
+# All requests go through Gateway with API Key
+curl -k https://localhost:7058/inventory-service/api/JK_Vehicles -H "X-Api-Key: MY_SECRET_KEY_123"
+curl -k https://localhost:7058/customer-service/api/Customers -H "X-Api-Key: MY_SECRET_KEY_123"
+curl -k https://localhost:7058/maintenance-service/api/RepairHistory/1 -H "X-Api-Key: MY_SECRET_KEY_123"
+```
 
-### 3. Open Swagger UI
+### 4. Run Unit Tests
+```bash
+dotnet test Inventory/JK_Inventory.Domain.Tests
+```
 
-Navigate to `https://localhost:7253/swagger` to test endpoints.
+## Service Ports
 
-## Known Limitations
-
-- **No clear service requirements for CRUD** - The API was built without a detailed specification (e.g., what POST should return). Currently, `POST /api/JK_Vehicles` returns `200 Ok()` instead of `201 Created` with the created resource, because the expected response contract was not defined.
-- **No containerization** - Not deployed with Docker or Kubernetes. The service runs locally and is not production-ready from a deployment perspective.
-- **No inter-service communication** - The Inventory service operates in isolation. It is not integrated with the other services in the solution (Customer.WebAPI, Maintenance.WebAPI) — no synchronous calls or async messaging between them.
-- **VehicleCode validation is minimal** - `VehicleCode` only checks non-null/empty for Make and Model. There is no validation against allowed values (e.g., a list of known manufacturers). If there were a mechanism to define or look up permitted Make/Model combinations, the Value Object could enforce stronger domain invariants.
-- **Permissive status transitions beyond assignment rules** - The domain only blocks the four transitions explicitly required by the assignment. Other transitions like Reserved → Maintenance, Maintenance → Maintenance, and Available → Available are technically allowed by the current implementation. A production system would likely enforce stricter transition rules.
+| Service | HTTPS | HTTP |
+|---------|-------|------|
+| Gateway | 7058 | 5210 |
+| Inventory WebAPI | 7253 | 5189 |
+| Maintenance WebAPI | 7228 | 5243 |
+| Customer WebAPI | 7238 | 5180 |
