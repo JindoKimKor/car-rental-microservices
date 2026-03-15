@@ -1,6 +1,6 @@
 namespace Inventory.Domain.Exceptions
 {
-	public class InvalidVehicleStateException : Exception
+	public class InvalidVehicleStateException : ArgumentException
 	{
 		public InvalidVehicleStateException() { }
 

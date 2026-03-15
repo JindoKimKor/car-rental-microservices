@@ -3,7 +3,7 @@ using Inventory.Domain.AggregatesModel.InventoryAggregate;
 using JK_Inventory.Application.Interfaces;
 using JK_Inventory.Infrastructure;
 using JK_Inventory.Infrastructure.Repositories;
-using JK_Inventory.WebAPI.Middleware;
+using CarRental.SharedKernel.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +21,9 @@ builder.Services.AddDbContext<JK_InventoryContext>(options =>
 builder.Services.AddScoped<IInventoryRepository, JK_InventoryRepository>();
 builder.Services.AddScoped<IVehicleService, JK_VehicleService>();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<JK_ExceptionMiddleware>();
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

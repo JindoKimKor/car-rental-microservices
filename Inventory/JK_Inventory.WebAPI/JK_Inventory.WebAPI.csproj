@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\CarRental.SharedKernel\CarRental.SharedKernel.csproj" />
     <ProjectReference Include="..\JK_Inventory.Application\JK_Inventory.Application.csproj" />
     <ProjectReference Include="..\JK_Inventory.Infrastructure\JK_Inventory.Infrastructure.csproj" />
   </ItemGroup>
