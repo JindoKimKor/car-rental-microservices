@@ -12,6 +12,7 @@
 			},
 			"maintenance-route": {
 				"ClusterId": "maintenance-cluster",
+				"RateLimiterPolicy": "fixed",
 				"Match": {
 					"Path": "/maintenance-service/{**catch-all}"
 				},

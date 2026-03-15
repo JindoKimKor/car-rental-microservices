@@ -1,4 +1,5 @@
 using CarRental.Gateway.Middleware;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,24 @@ builder.Configuration
 builder.Services.AddReverseProxy()
 	.LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
+// RateLimiting
+
+builder.Services.AddRateLimiter(options =>
+{
+	options.RejectionStatusCode = 429;
+	options.AddFixedWindowLimiter("fixed", opt =>
+	{
+		opt.Window = TimeSpan.FromSeconds(10);
+		opt.PermitLimit = 5;
+		opt.QueueLimit = 0;
+	});
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ApiKeyMiddleware>();
+
+app.UseRateLimiter();
 
 app.MapReverseProxy();
 
