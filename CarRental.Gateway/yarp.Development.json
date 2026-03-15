@@ -1,0 +1,27 @@
+{
+	"ReverseProxy": {
+		"Clusters": {
+			"inventory-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "https://localhost:7253/"
+					}
+				}
+			},
+			"maintenance-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "https://localhost:7228/"
+					}
+				}
+			},
+			"customer-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "https://localhost:7238/"
+					}
+				}
+			}
+		}
+	}
+}

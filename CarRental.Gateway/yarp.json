@@ -1,0 +1,47 @@
+{
+	"ReverseProxy": {
+		"Routes": {
+			"inventory-route": {
+				"ClusterId": "inventory-cluster",
+				"Match": {
+					"Path": "/inventory-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
+
+				]
+			},
+			"maintenance-route": {
+				"ClusterId": "maintenance-cluster",
+				"RateLimiterPolicy": "fixed",
+				"Match": {
+					"Path": "/maintenance-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
+				]
+			},
+			"customer-route": {
+				"ClusterId": "customer-cluster",
+				"Match": {
+					"Path": "/customer-service/{**catch-all}"
+				},
+				"Transforms": [
+					{ "PathPattern": "{**catch-all}" },
+					{
+						"RequestHeader": "X-Gateway-Secret",
+						"Set": "internal_secret"
+					}
+				]
+			}
+		}
+	}
+}
