@@ -6,6 +6,8 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 	{
 		public VehicleCode VehicleCode { get; private set; }
 
+		private Vehicle() { } // EF Core
+
 		public Vehicle(VehicleCode vehicleCode)
 		{
 			VehicleCode = vehicleCode;

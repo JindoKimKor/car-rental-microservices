@@ -5,68 +5,70 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 {
 	public class Inventory : Entity, IAggregateRoot
 	{
+		// FK int — for persistence
+		public int VehicleLocationId { get; private set; }
+		public int VehicleStatusId { get; private set; }
+
+		// Navigation — for domain access (populated on read)
 		public Vehicle Vehicle { get; private set; }
 		public VehicleLocation Location { get; private set; }
 		public VehicleStatus Status { get; private set; }
 
-		public Inventory(Vehicle vehicle, VehicleLocation location)
+		private Inventory() { } // EF Core
+
+		public Inventory(Vehicle vehicle, int locationId)
 		{
 			Vehicle = vehicle;
-			Location = location;
-			Status = VehicleStatus.Available;
+			VehicleLocationId = locationId;
+			VehicleStatusId = (int)VehicleStatusEnum.Available;
 		}
 
-		public Inventory(int id, Vehicle vehicle, VehicleLocation location, VehicleStatus status)
+		public void UpdateStatus(VehicleStatusEnum newStatus)
 		{
-			Id = id;
-			Vehicle = vehicle;
-			Location = location;
-			Status = status;
-		}
+			switch (newStatus)
+			{
+				case VehicleStatusEnum.Available:   MarkAvailable(); break;
+				case VehicleStatusEnum.Rented:      MarkRented(); break;
+				case VehicleStatusEnum.Reserved:    MarkReserved(); break;
+				case VehicleStatusEnum.Maintenance: MarkServiced(); break;
+				default: throw new InvalidVehicleStateException($"Invalid status: {newStatus}");
+			}
 
-		public void UpdateStatus(VehicleStatus newStatus)
-		{
-			if (newStatus == VehicleStatus.Available) MarkAvailable();
-			else if (newStatus == VehicleStatus.Rented) MarkRented();
-			else if (newStatus == VehicleStatus.Reserved) MarkReserved();
-			else if (newStatus == VehicleStatus.Maintenance) MarkServiced();
-			else throw new InvalidVehicleStateException($"Invalid status: {newStatus.Name}");
-
-			Status = newStatus;
+			VehicleStatusId = (int)newStatus;
 		}
 
 		private void MarkAvailable()
 		{
-			if (Status == VehicleStatus.Reserved)
+			if (VehicleStatusId == (int)VehicleStatusEnum.Reserved)
 				throw new InvalidVehicleStateException(
 					"A reserved vehicle cannot be marked as available without explicit release.");
 		}
 
 		private void MarkRented()
 		{
-			if (Status == VehicleStatus.Rented)
+			if (VehicleStatusId == (int)VehicleStatusEnum.Rented)
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is already rented.");
 
-			if (Status == VehicleStatus.Reserved)
+			if (VehicleStatusId == (int)VehicleStatusEnum.Reserved)
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is reserved.");
 
-			if (Status == VehicleStatus.Maintenance)
+			if (VehicleStatusId == (int)VehicleStatusEnum.Maintenance)
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is under service.");
 		}
 
 		private void MarkReserved()
 		{
-			if (Status != VehicleStatus.Available)
+			if (VehicleStatusId != (int)VehicleStatusEnum.Available)
 				throw new InvalidVehicleStateException(
 					"A vehicle can only be reserved if it is available.");
 		}
 
 		private void MarkServiced()
 		{
-			if (Status == VehicleStatus.Rented)
+			if (VehicleStatusId == (int)VehicleStatusEnum.Rented)
 				throw new InvalidVehicleStateException(
 					"A rented vehicle cannot be sent to service.");
 		}

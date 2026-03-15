@@ -6,9 +6,11 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 	{
 		public string Make { get; private set; }
 		public string Model { get; private set; }
-		public VehicleType Type { get; private set; }
+		public VehicleTypeEnum Type { get; private set; }
 
-		public VehicleCode(string make, string model, VehicleType type)
+		private VehicleCode() { } // EF Core
+
+		public VehicleCode(string make, string model, VehicleTypeEnum type)
 		{
 			Make = make;
 			Model = model;
