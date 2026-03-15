@@ -26,14 +26,13 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 
 		public void UpdateStatus(VehicleStatus newStatus)
 		{
-			switch (newStatus)
-			{
-				case VehicleStatus.Available:   MarkAvailable(); break;
-				case VehicleStatus.Rented:      MarkRented(); break;
-				case VehicleStatus.Reserved:    MarkReserved(); break;
-				case VehicleStatus.Maintenance: MarkServiced(); break;
-				default: throw new InvalidVehicleStateException("Invalid status.");
-			}
+			if (newStatus == VehicleStatus.Available) MarkAvailable();
+			else if (newStatus == VehicleStatus.Rented) MarkRented();
+			else if (newStatus == VehicleStatus.Reserved) MarkReserved();
+			else if (newStatus == VehicleStatus.Maintenance) MarkServiced();
+			else throw new InvalidVehicleStateException($"Invalid status: {newStatus.Name}");
+
+			Status = newStatus;
 		}
 
 		private void MarkAvailable()
@@ -41,8 +40,6 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			if (Status == VehicleStatus.Reserved)
 				throw new InvalidVehicleStateException(
 					"A reserved vehicle cannot be marked as available without explicit release.");
-
-			Status = VehicleStatus.Available;
 		}
 
 		private void MarkRented()
@@ -58,8 +55,6 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			if (Status == VehicleStatus.Maintenance)
 				throw new InvalidVehicleStateException(
 					"A vehicle cannot be rented if it is under service.");
-
-			Status = VehicleStatus.Rented;
 		}
 
 		private void MarkReserved()
@@ -67,8 +62,6 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			if (Status != VehicleStatus.Available)
 				throw new InvalidVehicleStateException(
 					"A vehicle can only be reserved if it is available.");
-
-			Status = VehicleStatus.Reserved;
 		}
 
 		private void MarkServiced()
@@ -76,8 +69,6 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			if (Status == VehicleStatus.Rented)
 				throw new InvalidVehicleStateException(
 					"A rented vehicle cannot be sent to service.");
-
-			Status = VehicleStatus.Maintenance;
 		}
 	}
 }

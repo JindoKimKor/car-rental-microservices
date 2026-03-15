@@ -1,10 +1,20 @@
+using Inventory.Domain.SeedWork;
+
 namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 {
-	public enum VehicleStatus
+	public class VehicleStatus : Entity
 	{
-		Available = 1,
-		Reserved = 2,
-		Rented = 3,
-		Maintenance = 4
+		public string Name { get; private set; }
+
+		public static VehicleStatus Available = new(1, "Available");
+		public static VehicleStatus Reserved = new(2, "Reserved");
+		public static VehicleStatus Rented = new(3, "Rented");
+		public static VehicleStatus Maintenance = new(4, "Maintenance");
+
+		public VehicleStatus(int id, string name)
+		{
+			Id = id;
+			Name = name;
+		}
 	}
 }
