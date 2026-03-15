@@ -31,11 +31,19 @@ namespace Inventory.Application.Services
 
 		public async Task CreateVehicle(JK_CreateVehicleDto dto)
 		{
-			var vehicleType = new VehicleType(dto.VehicleTypeId, "");
+			if (string.IsNullOrWhiteSpace(dto.Make))
+				throw new ArgumentException("Make is required.");
+			if (string.IsNullOrWhiteSpace(dto.Model))
+				throw new ArgumentException("Model is required.");
+			if (!Enum.IsDefined(typeof(VehicleLocationEnum), dto.LocationId))
+				throw new ArgumentException($"Invalid LocationId: {dto.LocationId}");
+			if (!Enum.IsDefined(typeof(VehicleTypeEnum), dto.VehicleTypeId))
+				throw new ArgumentException($"Invalid VehicleTypeId: {dto.VehicleTypeId}");
+
+			var vehicleType = (VehicleTypeEnum)dto.VehicleTypeId;
 			var vehicleCode = new VehicleCode(dto.Make, dto.Model, vehicleType);
 			var vehicle = new Vehicle(vehicleCode);
-			var location = new VehicleLocation(dto.LocationId, "");
-			var inventory = new InventoryEntity(vehicle, location);
+			var inventory = new InventoryEntity(vehicle, dto.LocationId);
 
 			_repository.Add(inventory);
 			await _repository.UnitOfWork.SaveChangesAsync();
@@ -46,7 +54,7 @@ namespace Inventory.Application.Services
 			var inventory = await _repository.FindByIdAsync(id)
 				?? throw new KeyNotFoundException($"Vehicle with id {id} not found.");
 
-			var newStatus = new VehicleStatus(0, dto.Status);
+			var newStatus = Enum.Parse<VehicleStatusEnum>(dto.Status, ignoreCase: true);
 			inventory.UpdateStatus(newStatus);
 
 			await _repository.UnitOfWork.SaveChangesAsync();
@@ -66,9 +74,9 @@ namespace Inventory.Application.Services
 				Id = inventory.Id,
 				Make = inventory.Vehicle.VehicleCode.Make,
 				Model = inventory.Vehicle.VehicleCode.Model,
-				LocationId = inventory.Location.Id,
-				VehicleTypeId = inventory.Vehicle.VehicleCode.Type.Id,
-				Status = inventory.Status.Name
+				LocationId = inventory.VehicleLocationId,
+				VehicleTypeId = (int)inventory.Vehicle.VehicleCode.Type,
+				Status = ((VehicleStatusEnum)inventory.VehicleStatusId).ToString()
 			};
 		}
 	}
