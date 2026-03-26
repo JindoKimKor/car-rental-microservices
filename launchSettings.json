@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "carrental.gateway": "StartDebugging",
+        "carrental.mvc": "StartDebugging",
+        "customer.webapi": "StartDebugging",
+        "maintenance.webapi": "StartDebugging",
+        "jk_inventory.webapi": "StartDebugging"
+      }
+    }
+  }
+}
