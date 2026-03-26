@@ -21,7 +21,7 @@ services:
 
   customer.webapi:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
     ports:
       - "7238:8080"
@@ -41,7 +41,7 @@ services:
 
   jk_inventory.webapi:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8080
     ports:
       - "7253:8080"
