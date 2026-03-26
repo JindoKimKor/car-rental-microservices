@@ -4,6 +4,10 @@ services:
     build:
       context: .
       dockerfile: CarRental.Gateway/Dockerfile
+    depends_on:
+      - jk_inventory.webapi
+      - maintenance.webapi
+      - customer.webapi
     networks:
       - appnetwork
 
@@ -12,6 +16,8 @@ services:
     build:
       context: .
       dockerfile: CarRental.MVC/Dockerfile
+    depends_on:
+      - carrental.gateway
     networks:
       - appnetwork
 
