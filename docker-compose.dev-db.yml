@@ -37,12 +37,12 @@ services:
     networks:
       - appnetwork
 
-  customer.webapi:
+  customer-webapi:
     depends_on:
       db-init-customer:
         condition: service_completed_successfully
 
-  jk_inventory.webapi:
+  jk-inventory-webapi:
     depends_on:
       db-init-inventory:
         condition: service_completed_successfully

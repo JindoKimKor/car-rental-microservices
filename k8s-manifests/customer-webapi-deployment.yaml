@@ -29,7 +29,8 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
           image: customerwebapi
-          name: customer.webapi
+          imagePullPolicy: Never
+          name: customer-webapi
           ports:
             - containerPort: 8080
               protocol: TCP

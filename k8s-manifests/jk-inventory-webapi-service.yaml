@@ -6,11 +6,11 @@ metadata:
     kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
     io.kompose.service: jk-inventory-webapi
-  name: jk_inventory.webapi
+  name: jk-inventory-webapi
 spec:
   ports:
-    - name: "7253"
-      port: 7253
+    - name: "8080"
+      port: 8080
       targetPort: 8080
   selector:
     io.kompose.service: jk-inventory-webapi

@@ -29,7 +29,8 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
           image: maintenancewebapi
-          name: maintenance.webapi
+          imagePullPolicy: Never
+          name: maintenance-webapi
           ports:
             - containerPort: 8080
               protocol: TCP

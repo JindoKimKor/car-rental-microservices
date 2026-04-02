@@ -29,7 +29,8 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
           image: carrentalgateway
-          name: carrental.gateway
+          imagePullPolicy: Never
+          name: carrental-gateway
           ports:
             - containerPort: 8080
               protocol: TCP

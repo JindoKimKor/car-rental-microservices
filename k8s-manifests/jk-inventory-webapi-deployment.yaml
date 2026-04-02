@@ -29,7 +29,8 @@ spec:
             - name: ASPNETCORE_URLS
               value: http://+:8080
           image: jkinventorywebapi
-          name: jk-inventory.webapi
+          imagePullPolicy: Never
+          name: jk-inventory-webapi
           ports:
             - containerPort: 8080
               protocol: TCP

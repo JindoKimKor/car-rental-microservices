@@ -5,12 +5,12 @@ metadata:
     kompose.cmd: C:\Users\blitz\AppData\Local\Microsoft\WinGet\Packages\Kubernetes.kompose_Microsoft.Winget.Source_8wekyb3d8bbwe\kompose.exe convert -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.dev-db.yml --out k8s-manifests/
     kompose.version: 1.38.0 (a8f5d1cbd)
   labels:
-    io.kompose.service: carrental-mvc
-  name: carrental.mvc
+    io.kompose.service: maintenance-webapi
+  name: maintenance-webapi
 spec:
   ports:
-    - name: "7100"
-      port: 7100
+    - name: "8080"
+      port: 8080
       targetPort: 8080
   selector:
-    io.kompose.service: carrental-mvc
+    io.kompose.service: maintenance-webapi

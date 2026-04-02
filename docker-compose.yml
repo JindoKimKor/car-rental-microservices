@@ -1,27 +1,27 @@
 services:
-  carrental.gateway:
+  carrental-gateway:
     image: ${DOCKER_REGISTRY-}carrentalgateway
     build:
       context: .
       dockerfile: CarRental.Gateway/Dockerfile
     depends_on:
-      - jk_inventory.webapi
-      - maintenance.webapi
-      - customer.webapi
+      - jk-inventory-webapi
+      - maintenance-webapi
+      - customer-webapi
     networks:
       - appnetwork
 
-  carrental.mvc:
+  carrental-mvc:
     image: ${DOCKER_REGISTRY-}carrentalmvc
     build:
       context: .
       dockerfile: CarRental.MVC/Dockerfile
     depends_on:
-      - carrental.gateway
+      - carrental-gateway
     networks:
       - appnetwork
 
-  customer.webapi:
+  customer-webapi:
     image: ${DOCKER_REGISTRY-}customerwebapi
     build:
       context: .
@@ -29,7 +29,7 @@ services:
     networks:
       - appnetwork
 
-  maintenance.webapi:
+  maintenance-webapi:
     image: ${DOCKER_REGISTRY-}maintenancewebapi
     build:
       context: .
@@ -37,7 +37,7 @@ services:
     networks:
       - appnetwork
 
-  jk_inventory.webapi:
+  jk-inventory-webapi:
     image: ${DOCKER_REGISTRY-}jkinventorywebapi
     build:
       context: .
