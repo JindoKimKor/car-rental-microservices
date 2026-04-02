@@ -9,16 +9,28 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 		public int VehicleLocationId { get; private set; }
 		public int VehicleStatusId { get; private set; }
 
-		// Navigation — for domain access (populated on read)
+		// Navigation — internal to Aggregate, EF Core populates on read
 		public Vehicle Vehicle { get; private set; }
 		public VehicleLocation Location { get; private set; }
 		public VehicleStatus Status { get; private set; }
 
+		// Aggregate Root exposes flat read-only properties.
+		// External layers access these instead of navigating into Child Entities.
+		// This prevents deep traversal like inventory.Vehicle.VehicleCode.Make
+		public string Make => Vehicle.VehicleCode.Make;
+		public string Model => Vehicle.VehicleCode.Model;
+		public VehicleTypeEnum VehicleType => Vehicle.VehicleCode.Type;
+
 		private Inventory() { } // EF Core
 
-		public Inventory(Vehicle vehicle, int locationId)
+		/// <summary>
+		/// Aggregate Root controls Child Entity creation.
+		/// Vehicle is created internally — not injected from outside.
+		/// </summary>
+		public Inventory(string make, string model, VehicleTypeEnum vehicleType, int locationId)
 		{
-			Vehicle = vehicle;
+			var vehicleCode = new VehicleCode(make, model, vehicleType);
+			Vehicle = new Vehicle(vehicleCode);
 			VehicleLocationId = locationId;
 			VehicleStatusId = (int)VehicleStatusEnum.Available;
 		}

@@ -7,17 +7,12 @@ namespace JK_Inventory.Domain.Tests
 {
 	public class JK_InventoryTests
 	{
-		private Vehicle CreateDefaultVehicle()
-		{
-			return new Vehicle(
-				new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan)
-			);
-		}
-
+		// Aggregate Root creates Vehicle internally — no direct Vehicle construction needed
 		private InventoryEntity CreateDefaultInventory()
 		{
 			return new InventoryEntity(
-				CreateDefaultVehicle(),
+				"Toyota", "Camry",
+				VehicleTypeEnum.Sedan,
 				(int)VehicleLocationEnum.Kitchener
 			);
 		}
@@ -36,8 +31,9 @@ namespace JK_Inventory.Domain.Tests
 		[Fact]
 		public void Vehicle_Should_Not_Implement_IAggregateRoot()
 		{
-			var vehicle = CreateDefaultVehicle();
-			Assert.False(vehicle is IAggregateRoot);
+			// Access Vehicle through Aggregate Root — not created directly
+			var inventory = CreateDefaultInventory();
+			Assert.False(inventory.Vehicle is IAggregateRoot);
 		}
 
 		[Fact]
@@ -50,8 +46,9 @@ namespace JK_Inventory.Domain.Tests
 		[Fact]
 		public void Vehicle_Should_Inherit_Entity()
 		{
-			var vehicle = CreateDefaultVehicle();
-			Assert.IsAssignableFrom<Entity>(vehicle);
+			// Access Vehicle through Aggregate Root — not created directly
+			var inventory = CreateDefaultInventory();
+			Assert.IsAssignableFrom<Entity>(inventory.Vehicle);
 		}
 
 		// ============================================

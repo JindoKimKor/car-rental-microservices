@@ -40,10 +40,10 @@ namespace Inventory.Application.Services
 			if (!Enum.IsDefined(typeof(VehicleTypeEnum), dto.VehicleTypeId))
 				throw new ArgumentException($"Invalid VehicleTypeId: {dto.VehicleTypeId}");
 
+			// Step 2: Application no longer creates VehicleCode/Vehicle directly.
+			// Aggregate Root (Inventory) controls Child Entity creation internally.
 			var vehicleType = (VehicleTypeEnum)dto.VehicleTypeId;
-			var vehicleCode = new VehicleCode(dto.Make, dto.Model, vehicleType);
-			var vehicle = new Vehicle(vehicleCode);
-			var inventory = new InventoryEntity(vehicle, dto.LocationId);
+			var inventory = new InventoryEntity(dto.Make, dto.Model, vehicleType, dto.LocationId);
 
 			_repository.Add(inventory);
 			await _repository.UnitOfWork.SaveChangesAsync();
@@ -67,15 +67,17 @@ namespace Inventory.Application.Services
 			await _repository.UnitOfWork.SaveChangesAsync();
 		}
 
+		// Application accesses Aggregate Root's flat properties only.
+		// No deep traversal into Child Entities (Vehicle.VehicleCode.Make).
 		private JK_VehicleDto ToDto(InventoryEntity inventory)
 		{
 			return new JK_VehicleDto
 			{
 				Id = inventory.Id,
-				Make = inventory.Vehicle.VehicleCode.Make,
-				Model = inventory.Vehicle.VehicleCode.Model,
+				Make = inventory.Make,
+				Model = inventory.Model,
 				LocationId = inventory.VehicleLocationId,
-				VehicleTypeId = (int)inventory.Vehicle.VehicleCode.Type,
+				VehicleTypeId = (int)inventory.VehicleType,
 				Status = ((VehicleStatusEnum)inventory.VehicleStatusId).ToString()
 			};
 		}
