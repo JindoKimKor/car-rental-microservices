@@ -18,9 +18,6 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Models.Customer> Customers { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=CustomerDB;Trusted_Connection=True;TrustServerCertificate=True;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Models.Customer>(entity =>

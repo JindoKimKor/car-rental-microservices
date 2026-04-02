@@ -1,0 +1,27 @@
+{
+	"ReverseProxy": {
+		"Clusters": {
+			"inventory-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "http://jk-inventory-webapi:8080/"
+					}
+				}
+			},
+			"maintenance-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "http://maintenance-webapi:8080/"
+					}
+				}
+			},
+			"customer-cluster": {
+				"Destinations": {
+					"destination1": {
+						"Address": "http://customer-webapi:8080/"
+					}
+				}
+			}
+		}
+	}
+}

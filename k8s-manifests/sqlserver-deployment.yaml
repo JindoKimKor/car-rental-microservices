@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\blitz\AppData\Local\Microsoft\WinGet\Packages\Kubernetes.kompose_Microsoft.Winget.Source_8wekyb3d8bbwe\kompose.exe convert -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.dev-db.yml --out k8s-manifests/
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    io.kompose.service: sqlserver
+  name: sqlserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sqlserver
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\Users\blitz\AppData\Local\Microsoft\WinGet\Packages\Kubernetes.kompose_Microsoft.Winget.Source_8wekyb3d8bbwe\kompose.exe convert -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.dev-db.yml --out k8s-manifests/
+        kompose.version: 1.38.0 (a8f5d1cbd)
+      labels:
+        io.kompose.service: sqlserver
+    spec:
+      containers:
+        - env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: SA_PASSWORD
+              value: YourStrong!Passw0rd
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          livenessProbe:
+            exec:
+              command:
+                - /opt/mssql-tools18/bin/sqlcmd
+                - -S
+                - localhost
+                - -U
+                - sa
+                - -P
+                - YourStrong!Passw0rd
+                - -C
+                - -Q
+                - SELECT 1
+            failureThreshold: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          name: sqlserver
+          ports:
+            - containerPort: 1433
+              protocol: TCP
+      restartPolicy: Always

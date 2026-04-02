@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    io.kompose.service: db-init-inventory
+  name: db-init-inventory
+spec:
+  template:
+    metadata:
+      labels:
+        io.kompose.service: db-init-inventory
+    spec:
+      initContainers:
+        - name: wait-for-sql
+          image: mcr.microsoft.com/mssql-tools
+          command: ['sh', '-c', 'until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P "YourStrong!Passw0rd" -Q "SELECT 1" 2>/dev/null; do echo "Waiting for SQL Server..."; sleep 5; done']
+      containers:
+        - args:
+            - /opt/mssql-tools/bin/sqlcmd
+            - -S
+            - sqlserver
+            - -U
+            - sa
+            - -P
+            - YourStrong!Passw0rd
+            - -i
+            - /scripts/init-inventory.sql
+          image: mcr.microsoft.com/mssql-tools
+          name: db-init-inventory
+          volumeMounts:
+            - mountPath: /scripts
+              name: db-init-inventory-cm0
+      restartPolicy: Never
+      volumes:
+        - configMap:
+            name: db-init-inventory-cm0
+          name: db-init-inventory-cm0
+  backoffLimit: 5
