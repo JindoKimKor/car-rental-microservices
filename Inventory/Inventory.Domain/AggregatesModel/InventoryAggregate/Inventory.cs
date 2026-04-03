@@ -19,70 +19,43 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 		// This prevents deep traversal like inventory.Vehicle.VehicleCode.Make
 		public string Make => Vehicle.VehicleCode.Make;
 		public string Model => Vehicle.VehicleCode.Model;
-		public VehicleTypeEnum VehicleType => Vehicle.VehicleCode.Type;
+		public int VehicleTypeId => Vehicle.VehicleTypeId;
 
 		private Inventory() { } // EF Core
 
 		/// <summary>
-		/// Aggregate Root controls Child Entity creation.
-		/// Vehicle is created internally — not injected from outside.
+		/// Constructor initializes Inventory's own attributes only.
+		/// Vehicle is added separately via AddVehicle() — domain behavior.
+		/// Ubiquitous Language: "Create inventory at location" → "Add vehicle to it"
 		/// </summary>
-		public Inventory(string make, string model, VehicleTypeEnum vehicleType, int locationId)
+		public Inventory(int locationId)
 		{
-			var vehicleCode = new VehicleCode(make, model, vehicleType);
-			Vehicle = new Vehicle(vehicleCode);
+			if (!VehicleLocation.IsValid(locationId))
+				throw new InvalidVehicleStateException($"Invalid location: {locationId}");
+
 			VehicleLocationId = locationId;
+		}
+
+		/// <summary>
+		/// Domain behavior: Add a vehicle to this inventory.
+		/// Aggregate Root controls Child Entity creation.
+		/// Vehicle validates VehicleType + creates VehicleCode internally.
+		/// Status automatically set to Available.
+		/// </summary>
+		public void AddVehicle(string make, string model, VehicleTypeEnum vehicleType)
+		{
+			Vehicle = new Vehicle(make, model, vehicleType);
 			VehicleStatusId = (int)VehicleStatusEnum.Available;
 		}
 
+		/// <summary>
+		/// Aggregate Root delegates status transition validation to VehicleStatus Entity.
+		/// Root is the entry point; Entity owns the business rules.
+		/// </summary>
 		public void UpdateStatus(VehicleStatusEnum newStatus)
 		{
-			switch (newStatus)
-			{
-				case VehicleStatusEnum.Available:   MarkAvailable(); break;
-				case VehicleStatusEnum.Rented:      MarkRented(); break;
-				case VehicleStatusEnum.Reserved:    MarkReserved(); break;
-				case VehicleStatusEnum.Maintenance: MarkServiced(); break;
-				default: throw new InvalidVehicleStateException($"Invalid status: {newStatus}");
-			}
-
+			VehicleStatus.ValidateTransition(VehicleStatusId, newStatus);
 			VehicleStatusId = (int)newStatus;
-		}
-
-		private void MarkAvailable()
-		{
-			if (VehicleStatusId == (int)VehicleStatusEnum.Reserved)
-				throw new InvalidVehicleStateException(
-					"A reserved vehicle cannot be marked as available without explicit release.");
-		}
-
-		private void MarkRented()
-		{
-			if (VehicleStatusId == (int)VehicleStatusEnum.Rented)
-				throw new InvalidVehicleStateException(
-					"A vehicle cannot be rented if it is already rented.");
-
-			if (VehicleStatusId == (int)VehicleStatusEnum.Reserved)
-				throw new InvalidVehicleStateException(
-					"A vehicle cannot be rented if it is reserved.");
-
-			if (VehicleStatusId == (int)VehicleStatusEnum.Maintenance)
-				throw new InvalidVehicleStateException(
-					"A vehicle cannot be rented if it is under service.");
-		}
-
-		private void MarkReserved()
-		{
-			if (VehicleStatusId != (int)VehicleStatusEnum.Available)
-				throw new InvalidVehicleStateException(
-					"A vehicle can only be reserved if it is available.");
-		}
-
-		private void MarkServiced()
-		{
-			if (VehicleStatusId == (int)VehicleStatusEnum.Rented)
-				throw new InvalidVehicleStateException(
-					"A rented vehicle cannot be sent to service.");
 		}
 	}
 }

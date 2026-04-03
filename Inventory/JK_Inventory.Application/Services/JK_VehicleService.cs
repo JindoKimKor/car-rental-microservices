@@ -29,21 +29,12 @@ namespace Inventory.Application.Services
 			return inventories.Select(ToDto);
 		}
 
+		// Ubiquitous Language: "Create inventory at location" → "Add vehicle to it"
+		// All validation delegated to Domain — Application passes primitive values only.
 		public async Task CreateVehicle(JK_CreateVehicleDto dto)
 		{
-			if (string.IsNullOrWhiteSpace(dto.Make))
-				throw new ArgumentException("Make is required.");
-			if (string.IsNullOrWhiteSpace(dto.Model))
-				throw new ArgumentException("Model is required.");
-			if (!Enum.IsDefined(typeof(VehicleLocationEnum), dto.LocationId))
-				throw new ArgumentException($"Invalid LocationId: {dto.LocationId}");
-			if (!Enum.IsDefined(typeof(VehicleTypeEnum), dto.VehicleTypeId))
-				throw new ArgumentException($"Invalid VehicleTypeId: {dto.VehicleTypeId}");
-
-			// Step 2: Application no longer creates VehicleCode/Vehicle directly.
-			// Aggregate Root (Inventory) controls Child Entity creation internally.
-			var vehicleType = (VehicleTypeEnum)dto.VehicleTypeId;
-			var inventory = new InventoryEntity(dto.Make, dto.Model, vehicleType, dto.LocationId);
+			var inventory = new InventoryEntity(dto.LocationId);
+			inventory.AddVehicle(dto.Make, dto.Model, (VehicleTypeEnum)dto.VehicleTypeId);
 
 			_repository.Add(inventory);
 			await _repository.UnitOfWork.SaveChangesAsync();
@@ -77,7 +68,7 @@ namespace Inventory.Application.Services
 				Make = inventory.Make,
 				Model = inventory.Model,
 				LocationId = inventory.VehicleLocationId,
-				VehicleTypeId = (int)inventory.VehicleType,
+				VehicleTypeId = inventory.VehicleTypeId,
 				Status = ((VehicleStatusEnum)inventory.VehicleStatusId).ToString()
 			};
 		}

@@ -7,14 +7,12 @@ namespace JK_Inventory.Domain.Tests
 {
 	public class JK_InventoryTests
 	{
-		// Aggregate Root creates Vehicle internally — no direct Vehicle construction needed
+		// Ubiquitous Language: Create inventory at location → Add vehicle
 		private InventoryEntity CreateDefaultInventory()
 		{
-			return new InventoryEntity(
-				"Toyota", "Camry",
-				VehicleTypeEnum.Sedan,
-				(int)VehicleLocationEnum.Kitchener
-			);
+			var inventory = new InventoryEntity((int)VehicleLocationEnum.Kitchener);
+			inventory.AddVehicle("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			return inventory;
 		}
 
 		// ============================================
@@ -181,31 +179,35 @@ namespace JK_Inventory.Domain.Tests
 		}
 
 		// ============================================
-		// VehicleCode Value Object
+		// VehicleCode Value Object (Make + Model only)
 		// ============================================
 
 		[Fact]
 		public void VehicleCode_SameValues_ShouldBeEqual()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry");
+			var code2 = new VehicleCode("Toyota", "Camry");
 			Assert.Equal(code1, code2);
 		}
 
 		[Fact]
 		public void VehicleCode_DifferentValues_ShouldNotBeEqual()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Honda", "Civic", VehicleTypeEnum.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry");
+			var code2 = new VehicleCode("Honda", "Civic");
 			Assert.NotEqual(code1, code2);
 		}
 
 		[Fact]
-		public void VehicleCode_SameMakeModel_DifferentType_ShouldNotBeEqual()
+		public void VehicleCode_EmptyMake_ShouldThrow()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.SUV);
-			Assert.NotEqual(code1, code2);
+			Assert.Throws<ArgumentException>(() => new VehicleCode("", "Camry"));
+		}
+
+		[Fact]
+		public void VehicleCode_EmptyModel_ShouldThrow()
+		{
+			Assert.Throws<ArgumentException>(() => new VehicleCode("Toyota", ""));
 		}
 
 		// ============================================
@@ -215,24 +217,16 @@ namespace JK_Inventory.Domain.Tests
 		[Fact]
 		public void IsSameVehicle_SameValues_ShouldReturnTrue()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
+			var code1 = new VehicleCode("Toyota", "Camry");
+			var code2 = new VehicleCode("Toyota", "Camry");
 			Assert.True(code1.IsSameVehicle(code2));
 		}
 
 		[Fact]
 		public void IsSameVehicle_DifferentMake_ShouldReturnFalse()
 		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Honda", "Camry", VehicleTypeEnum.Sedan);
-			Assert.False(code1.IsSameVehicle(code2));
-		}
-
-		[Fact]
-		public void IsSameVehicle_DifferentType_ShouldReturnFalse()
-		{
-			var code1 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.Sedan);
-			var code2 = new VehicleCode("Toyota", "Camry", VehicleTypeEnum.SUV);
+			var code1 = new VehicleCode("Toyota", "Camry");
+			var code2 = new VehicleCode("Honda", "Camry");
 			Assert.False(code1.IsSameVehicle(code2));
 		}
 	}

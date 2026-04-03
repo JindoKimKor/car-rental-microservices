@@ -11,5 +11,13 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 			Id = id;
 			Name = name;
 		}
+
+		/// <summary>
+		/// Validates whether a location ID corresponds to a valid VehicleLocationEnum value.
+		/// </summary>
+		public static bool IsValid(int id)
+		{
+			return Enum.IsDefined(typeof(VehicleLocationEnum), id);
+		}
 	}
 }

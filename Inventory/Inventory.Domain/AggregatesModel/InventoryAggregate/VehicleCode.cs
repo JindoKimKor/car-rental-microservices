@@ -6,27 +6,37 @@ namespace Inventory.Domain.AggregatesModel.InventoryAggregate
 	{
 		public string Make { get; private set; }
 		public string Model { get; private set; }
-		public VehicleTypeEnum Type { get; private set; }
 
 		private VehicleCode() { } // EF Core
 
-		public VehicleCode(string make, string model, VehicleTypeEnum type)
+		/// <summary>
+		/// ValueObject validates its own values on creation.
+		/// Once created, it is immutable — invalid state cannot exist.
+		/// </summary>
+		/// <summary>
+		/// ValueObject validates its own values on creation.
+		/// Once created, it is immutable — invalid state cannot exist.
+		/// VehicleCode = Make + Model only. Type is Vehicle's responsibility (FK).
+		/// </summary>
+		public VehicleCode(string make, string model)
 		{
+			if (string.IsNullOrWhiteSpace(make))
+				throw new ArgumentException("Make is required.");
+			if (string.IsNullOrWhiteSpace(model))
+				throw new ArgumentException("Model is required.");
+
 			Make = make;
 			Model = model;
-			Type = type;
 		}
 
 		protected override IEnumerable<object> GetEqualityComponents()
 		{
 			yield return Make;
 			yield return Model;
-			yield return Type;
 		}
 
-		// Checks if two vehicle codes represent the same vehicle type
 		public bool IsSameVehicle(VehicleCode other) => Equals(other);
 
-		public override string ToString() => $"{Make}-{Model}-{Type}";
+		public override string ToString() => $"{Make}-{Model}";
 	}
 }

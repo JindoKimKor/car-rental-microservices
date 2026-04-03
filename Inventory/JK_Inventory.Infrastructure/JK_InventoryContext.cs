@@ -50,12 +50,18 @@ namespace JK_Inventory.Infrastructure
 				entity.HasKey(e => e.Id);
 				entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
+				// VehicleCode (ValueObject) — Make + Model only, owned by Vehicle
 				entity.OwnsOne(e => e.VehicleCode, vc =>
 				{
 					vc.Property(v => v.Make).HasColumnName("Make").HasMaxLength(50).IsRequired();
 					vc.Property(v => v.Model).HasColumnName("Model").HasMaxLength(50).IsRequired();
-					vc.Property(v => v.Type).HasColumnName("VehicleTypeId");
 				});
+
+				// VehicleTypeId — FK on Vehicle (not in VehicleCode)
+				entity.HasOne(e => e.Type)
+					.WithMany()
+					.HasForeignKey(e => e.VehicleTypeId)
+					.OnDelete(DeleteBehavior.ClientSetNull);
 			});
 
 			// VehicleLocation table
@@ -107,23 +113,24 @@ namespace JK_Inventory.Infrastructure
 				new { Id = 4, Name = "Maintenance" }
 			);
 
-			// Vehicle seed data
+			// Vehicle seed data — VehicleTypeId is now on Vehicle, not VehicleCode
 			modelBuilder.Entity<Vehicle>().HasData(
-				new { Id = 1 },
-				new { Id = 2 },
-				new { Id = 3 },
-				new { Id = 4 },
-				new { Id = 5 },
-				new { Id = 6 }
+				new { Id = 1, VehicleTypeId = (int)VehicleTypeEnum.Sedan },
+				new { Id = 2, VehicleTypeId = (int)VehicleTypeEnum.Sedan },
+				new { Id = 3, VehicleTypeId = (int)VehicleTypeEnum.SUV },
+				new { Id = 4, VehicleTypeId = (int)VehicleTypeEnum.SUV },
+				new { Id = 5, VehicleTypeId = (int)VehicleTypeEnum.Truck },
+				new { Id = 6, VehicleTypeId = (int)VehicleTypeEnum.Van }
 			);
 
+			// VehicleCode (ValueObject) — Make + Model only
 			modelBuilder.Entity<Vehicle>().OwnsOne(e => e.VehicleCode).HasData(
-				new { VehicleId = 1, Make = "Toyota", Model = "Camry", Type = VehicleTypeEnum.Sedan },
-				new { VehicleId = 2, Make = "Honda", Model = "Civic", Type = VehicleTypeEnum.Sedan },
-				new { VehicleId = 3, Make = "Ford", Model = "Escape", Type = VehicleTypeEnum.SUV },
-				new { VehicleId = 4, Make = "Toyota", Model = "RAV4", Type = VehicleTypeEnum.SUV },
-				new { VehicleId = 5, Make = "Ford", Model = "F-150", Type = VehicleTypeEnum.Truck },
-				new { VehicleId = 6, Make = "Chevy", Model = "Express", Type = VehicleTypeEnum.Van }
+				new { VehicleId = 1, Make = "Toyota", Model = "Camry" },
+				new { VehicleId = 2, Make = "Honda", Model = "Civic" },
+				new { VehicleId = 3, Make = "Ford", Model = "Escape" },
+				new { VehicleId = 4, Make = "Toyota", Model = "RAV4" },
+				new { VehicleId = 5, Make = "Ford", Model = "F-150" },
+				new { VehicleId = 6, Make = "Chevy", Model = "Express" }
 			);
 
 			// Inventory seed data
