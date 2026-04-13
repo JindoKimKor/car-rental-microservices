@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: carrental-mvc
+  name: carrental-mvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: carrental-mvc
+  template:
+    metadata:
+      labels:
+        io.kompose.service: carrental-mvc
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Docker
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+          image: carrentalmvc
+          name: carrental-mvc
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always

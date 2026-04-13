@@ -1,0 +1,28 @@
+# ============================================================
+# Base Kustomization - shared across all environments
+# ============================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Deployments (app services)
+  - carrental-gateway-deployment.yaml
+  - carrental-mvc-deployment.yaml
+  - customer-webapi-deployment.yaml
+  - maintenance-webapi-deployment.yaml
+  - jk-inventory-webapi-deployment.yaml
+  # Deployments (infrastructure)
+  - sqlserver-deployment.yaml
+  # Services
+  - carrental-gateway-service.yaml
+  - carrental-mvc-service.yaml
+  - customer-webapi-service.yaml
+  - maintenance-webapi-service.yaml
+  - jk-inventory-webapi-service.yaml
+  - sqlserver-service.yaml
+  # DB Init
+  - db-init-customer-cm0-configmap.yaml
+  - db-init-inventory-cm0-configmap.yaml
+  - db-init-customer-job.yaml
+  - db-init-inventory-job.yaml

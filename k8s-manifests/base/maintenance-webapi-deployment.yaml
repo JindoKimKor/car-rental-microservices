@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: maintenance-webapi
+  name: maintenance-webapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: maintenance-webapi
+  template:
+    metadata:
+      labels:
+        io.kompose.service: maintenance-webapi
+    spec:
+      containers:
+        - env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+          image: maintenancewebapi
+          name: maintenance-webapi
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      restartPolicy: Always

@@ -1,0 +1,44 @@
+# ============================================================
+# AKS Overlay - Azure Kubernetes Service
+# ============================================================
+# Changes image names to pull from ACR (Azure Container Registry)
+# instead of local Docker images.
+# AKS has AcrPull role assignment so it can authenticate
+# to ACR automatically via managed identity.
+# ============================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+images:
+  - name: carrentalgateway
+    newName: jindobcarentalacr.azurecr.io/carrentalgateway
+    newTag: latest
+  - name: carrentalmvc
+    newName: jindobcarentalacr.azurecr.io/carrentalmvc
+    newTag: latest
+  - name: customerwebapi
+    newName: jindobcarentalacr.azurecr.io/customerwebapi
+    newTag: latest
+  - name: maintenancewebapi
+    newName: jindobcarentalacr.azurecr.io/maintenancewebapi
+    newTag: latest
+  - name: jkinventorywebapi
+    newName: jindobcarentalacr.azurecr.io/jkinventorywebapi
+    newTag: latest
+
+# ============================================================
+# LoadBalancer for MVC - assigns external IP on AKS
+# Local K8s does not support LoadBalancer (uses port-forward)
+# ============================================================
+patches:
+  - target:
+      kind: Service
+      name: carrental-mvc
+    patch: |
+      - op: add
+        path: /spec/type
+        value: LoadBalancer
