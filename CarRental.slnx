@@ -10,33 +10,32 @@
     <Project Path="Inventory/JK_Inventory.Infrastructure/JK_Inventory.Infrastructure.csproj" Id="a2a2d9f1-df8d-4e50-a44c-f3176bcdbf5b" />
     <Project Path="Inventory/JK_Inventory.WebAPI/JK_Inventory.WebAPI.csproj" Id="2304c000-daca-40fd-8ea0-ed05d79fe59e" />
   </Folder>
-  <Folder Name="/k8s-manifest/">
-    <File Path="k8s-manifests/carrental-gateway-claim0-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/carrental-gateway-claim1-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/carrental-gateway-deployment.yaml" />
-    <File Path="k8s-manifests/carrental-gateway-service.yaml" />
-    <File Path="k8s-manifests/carrental-mvc-claim0-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/carrental-mvc-claim1-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/carrental-mvc-deployment.yaml" />
-    <File Path="k8s-manifests/carrental-mvc-service.yaml" />
-    <File Path="k8s-manifests/customer-webapi-claim0-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/customer-webapi-claim1-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/customer-webapi-deployment.yaml" />
-    <File Path="k8s-manifests/customer-webapi-service.yaml" />
-    <File Path="k8s-manifests/db-init-customer-cm0-configmap.yaml" />
-    <File Path="k8s-manifests/db-init-customer-job.yaml" />
-    <File Path="k8s-manifests/db-init-inventory-cm0-configmap.yaml" />
-    <File Path="k8s-manifests/db-init-inventory-job.yaml" />
-    <File Path="k8s-manifests/jk-inventory-webapi-claim0-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/jk-inventory-webapi-claim1-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/jk-inventory-webapi-deployment.yaml" />
-    <File Path="k8s-manifests/jk-inventory-webapi-service.yaml" />
-    <File Path="k8s-manifests/maintenance-webapi-claim0-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/maintenance-webapi-claim1-persistentvolumeclaim.yaml" />
-    <File Path="k8s-manifests/maintenance-webapi-deployment.yaml" />
-    <File Path="k8s-manifests/maintenance-webapi-service.yaml" />
-    <File Path="k8s-manifests/sqlserver-deployment.yaml" />
-    <File Path="k8s-manifests/sqlserver-service.yaml" />
+  <Folder Name="/k8s-manifests/" />
+  <Folder Name="/k8s-manifests/base/">
+    <File Path="k8s-manifests/base/carrental-gateway-deployment.yaml" />
+    <File Path="k8s-manifests/base/carrental-gateway-service.yaml" />
+    <File Path="k8s-manifests/base/carrental-mvc-deployment.yaml" />
+    <File Path="k8s-manifests/base/carrental-mvc-service.yaml" />
+    <File Path="k8s-manifests/base/customer-webapi-deployment.yaml" />
+    <File Path="k8s-manifests/base/customer-webapi-service.yaml" />
+    <File Path="k8s-manifests/base/db-init-customer-cm0-configmap.yaml" />
+    <File Path="k8s-manifests/base/db-init-customer-job.yaml" />
+    <File Path="k8s-manifests/base/db-init-inventory-cm0-configmap.yaml" />
+    <File Path="k8s-manifests/base/db-init-inventory-job.yaml" />
+    <File Path="k8s-manifests/base/jk-inventory-webapi-deployment.yaml" />
+    <File Path="k8s-manifests/base/jk-inventory-webapi-service.yaml" />
+    <File Path="k8s-manifests/base/kustomization.yaml" />
+    <File Path="k8s-manifests/base/maintenance-webapi-deployment.yaml" />
+    <File Path="k8s-manifests/base/maintenance-webapi-service.yaml" />
+    <File Path="k8s-manifests/base/sqlserver-deployment.yaml" />
+    <File Path="k8s-manifests/base/sqlserver-service.yaml" />
+  </Folder>
+  <Folder Name="/k8s-manifests/overlays/" />
+  <Folder Name="/k8s-manifests/overlays/aks/">
+    <File Path="k8s-manifests/overlays/aks/kustomization.yaml" />
+  </Folder>
+  <Folder Name="/k8s-manifests/overlays/local/">
+    <File Path="k8s-manifests/overlays/local/kustomization.yaml" />
   </Folder>
   <Folder Name="/Shared/">
     <Project Path="CarRental.SharedKernel/CarRental.SharedKernel.csproj" Id="bfcd3db4-c678-4d2d-bd9e-0ed2cef6818b" />
